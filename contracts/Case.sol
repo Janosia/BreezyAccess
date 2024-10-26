@@ -29,6 +29,8 @@ contract Case{
     event EvidenceAssignedLevel(string, bytes32);
     event EvidenceRegistered(string, bytes32, address);
     
+
+    ///@notice checks if case has already been created
     function does_case_exists(uint num) public view returns(bool){
         for(uint i =0; i<Cases.length; i++){
             if(Cases[i] == num){
@@ -38,8 +40,10 @@ contract Case{
         return false;
     }
 
-
-    function createcase(string memory name, uint case_number) public payable {       // create case
+    /// @notice creates a case 
+    /// @param name Name of the Case File
+    /// @param case_number Unique Number assigned to case 
+    function createcase(string memory name, uint case_number) public payable {
         require(does_case_exists(case_number) == false, "Case is already created");
         require(assignrole.returnRole(msg.sender) == 1, "Only Head Investigator can create cases");
         SCase storage newCase = cases[case_number];
@@ -51,11 +55,15 @@ contract Case{
         emit RegistrationDone ("Case Registered", name, case_number);
     }
 
-    function returnHI(uint case_number) public payable returns(address){ // return HI
+    ///@notice returns Head Investigator of a case 
+    function returnHI(uint case_number) public payable returns(address){ 
         SCase storage newCase = cases[case_number];
         return(newCase.HI); 
     }
-
+    
+    ///@notice returns whether an user is authorised to work on a case 
+    /// @param user address of user requesting access
+    /// @param number Unique Case Number 
     function is_authorized(address user, uint number) public view returns(bool) { // DAC
         SCase storage nC = cases[number];
         if (nC.investigators[user] == 1){
@@ -64,11 +72,10 @@ contract Case{
         return false;
     }
 
-    function add_investigator(address inv, uint num) public payable{    // DAC
-
+    /// @notice this introduces DAC, allows Head Investigator to modify access rights
+    function add_investigator(address inv, uint num) public payable{    
         SCase storage newC= cases[num];
         newC.investigators[inv] = 1;
-
     }
     
     function does_evidence_exists(uint case_number, bytes32 key) public view returns(bool){  // evi exists
@@ -119,7 +126,10 @@ contract Case{
         require(is_level_assigned(case_num,key) == false, "Level assigned" );
         setlevel(key, case_num);
     }
-    function register_evi(uint case_num, string memory ev, address user)public payable{ // simple register
+
+    ///@notice allows user to register new information 
+    /// @param case_num Unique case ID; @param ev information ; @param user address of requestor
+    function register_evi(uint case_num, string memory ev, address user)public payable{
         bytes32 key = keccak256(abi.encodePacked(ev));
         require(does_case_exists(case_num) == true , "Case does not exists");
         require(does_evidence_exists(case_num,key) == false , "Evidence exists");
@@ -130,6 +140,8 @@ contract Case{
 
     }
 
+    ///@notice return level of integrity assigned to an evidence
+    ///@param key unique identifier of evidence  
     function return_level(uint case_num, bytes32 key) public payable returns(uint){
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(does_evidence_exists(case_num, key) == true , "Evidence does not exists");
