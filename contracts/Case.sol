@@ -3,6 +3,9 @@ pragma solidity ^0.8.17;
 
 import "./AssignRole.sol";
 
+///@title this contract checks whether requestor is head investigator or not 
+///and then allows creation of case
+
 contract Case{
     AssignRole public assignrole;
     constructor () {
