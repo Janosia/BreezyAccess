@@ -17,14 +17,13 @@ function ContractSelector() {
     <div className = "titlebox">
       <div className = "title">Evidence Management System</div>
       <div className= "dropdown-for-contract">
-      <label>Select Contract: </label>
-      <select value={selectedContract} onChange={handleContractChange}>
+      <label className="selectcontract">Select Contract: </label>
+      <select className="labelindropdown"value={selectedContract} onChange={handleContractChange}>
         <option value="Append">Append</option>
         <option value="Read">Read</option>
         <option value="Evidence Registration">Evidence Registration</option>
         <option value="Role Registration">Role Registration</option>
         <option value="Case Registration">Case Registration</option>
-        {/* Add more contract options here */}
       </select>
 
       {selectedContract === "Append" && <BibaAppendComponent />}
