@@ -1,0 +1,48 @@
+  .titlebox{
+    display: grid;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    grid-column-end: 4;
+    font-family: fantasy;
+  }  
+  .title{
+    color: #303c4e;
+    text-align: center;
+    font-size: 50px;
+    font-family: fantasy;
+    padding: 10px;
+  }
+
+  .dropdown-for-contract{
+    display: grid;
+    grid-template-rows: 50px, 50px;
+    grid-template-columns: repeat(4,1fr);
+    gap: 5px;
+    padding: 10px;
+  }
+  .selectcontract{
+    grid-row-start: 1;
+    grid-row-end: 1;
+    grid-column-start: 1;
+    grid-column-end: 1;
+    font-size: 35px;
+    padding-left: 120px;
+    padding-right: 10px;
+    height: 50px;
+  }
+  .labelindropdown{
+    grid-row-start: 1;
+    grid-row-end: 1;
+    grid-column-start: 2;
+    grid-column-end: 5;
+    background: #303c4e;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-family:fantasy ;
+    font-size: 25px;
+    color: #ebd66b;
+    height: 50px;
+    width:360px
+  }

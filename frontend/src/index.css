@@ -1,0 +1,24 @@
+/* index.css or global.css */
+
+/* Reset margins and paddings */
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* Body settings */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #f6f1e5;
+    color: #303c4e;
+    height: 100vh;
+  }
+
+/* Optionally add any global styles here */
+
