@@ -1,0 +1,44 @@
+.BibaAppend{
+    display : grid;
+    grid-template-rows: 50px, 50px, 50px, 50px;
+    grid-template-columns: 50px, 50px;
+    grid-row-start: 2;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 5;
+    background-color: #303c4e;
+    border-radius: 10px;
+}
+.AppendContent{
+    grid-row-start:2;
+    grid-row-end:2;
+    grid-column-start:1;
+    grid-column-end: 2;
+}
+.Text-BibaAppend, .Append-Heading{
+    color: #ebd66b;
+}
+.Append-Heading{
+    font-size: 45px;
+    grid-row-start:1;
+    grid-row-end: 1;
+    grid-column-start:1; 
+    grid-column-end:2;
+    padding-left: 200px;
+    padding-bottom: 20px;
+}
+.originalevi, .evidence, .ValueAppend, .Case-Number{
+    font-size: 20px;
+    padding: 10px;
+    padding-left: 30px;
+    color:#ebd66b;
+}
+.Hash-Doc-Button, .Final-Append-Button{
+    border-radius: 10px;
+    border: none;
+    width:200px;
+    height: 30px;
+    background-color:#ebd66b;
+    color:#303c4e;
+}
+

@@ -17,7 +17,7 @@ function ContractSelector() {
     <div className = "titlebox">
       <div className = "title">Evidence Management System</div>
       <div className= "dropdown-for-contract">
-      <label className="selectcontract">Select Contract: </label>
+      <label className="selectcontract">Contract</label>
       <select className="labelindropdown"value={selectedContract} onChange={handleContractChange}>
         <option value="Append">Append</option>
         <option value="Read">Read</option>

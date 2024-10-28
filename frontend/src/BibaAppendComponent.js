@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./BibaAppend.css";
 import Web3 from "web3";
 
 import AssignRoleABI from "./build/contracts/AssignRole.json";
@@ -142,24 +143,23 @@ const BibaAppendComponent = () => {
   
 
   return (
-    <div>
-      <h2>Append</h2>
-      <div>
-        <label>Original Evidence Key</label>
+    <div className="BibaAppend">
+      <div className="Append-Heading">Append Evidence</div>
+      <div className = "AppendContent">
+        <label className="originalevi">Original Evidence Key</label>
         <input
           type="text"
           id="value"></input>
       
       </div>
-      <div>
-        <label>Select Document:</label>
-        <input type="file" onChange={onFileChange} />
+      <div className="evidence">
+        <label  className="Text-BibaAppend"> Select Document </label>
+        <input className="Input-Doc" type="file" onChange={onFileChange} />
+        <button className="Hash-Doc-Button" onClick={hashDocument}> Hash Document </button>
       </div>
 
-      <button onClick={hashDocument}>Hash Document</button>
-
-      <div>
-        <label> To Append:</label>
+      <div className="ValueAppend">
+        <label className="Text-BibaAppend"> To Append </label>
         <input
           type="text"
           placeholder="hash generated"
@@ -167,14 +167,14 @@ const BibaAppendComponent = () => {
           readOnly
         />
       </div>
-      <div>
-        <label>Case Number</label>
+      <div className="Case-Number">
+        <label className="Text-BibaAppend">Case Number</label>
         <input
           type="text"
           id="value3"></input>
       
       </div>
-      <button onClick={handleAppend}>Append Evidence</button>
+      <button className="Final-Append-Button" onClick={handleAppend}>Append Evidence</button>
       <div>
         <p>{outputMessage}</p>
       </div>
