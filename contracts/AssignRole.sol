@@ -16,11 +16,11 @@ contract AssignRole {
 
     function getLevel(
         string calldata designation
-    ) public payable returns (uint) {
+    ) internal view returns (uint) {
         return (Levels[designation]);
     }
 
-    function DoesExists(address user) public view returns (bool) {
+    function DoesExists(address user) internal view returns (bool) {
         for (uint i = 0; i < RegisteredUsers.length; i++) {
             if (RegisteredUsers[i] == user) {
                 return true;
@@ -29,7 +29,7 @@ contract AssignRole {
         return false;
     }
 
-    function setRole(string calldata designation, address user) public payable {
+    function setRole(string calldata designation, address user) internal {
         require(DoesExists(user) == false, "User Already Registered");
         require(getLevel(designation) > 0, "Invalid designation");
         Roles[user] = getLevel(designation);
@@ -40,7 +40,7 @@ contract AssignRole {
             Roles[user]
         );
     }
-    function returnRole(address user) public view returns (uint) {
+    function returnRole(address user) internal view returns (uint) {
         require(DoesExists(user) == true, "User is not registered");
         return Roles[user];
     }
