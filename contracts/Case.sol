@@ -160,7 +160,7 @@ contract Case is AssignRole {
     /// @param case_num Unique case ID; @param ev information ; @param user address of requestor
     function register_evi(
         uint case_num,
-        string calldata ev,
+        string memory ev,
         address user
     ) public payable {
         bytes32 key = keccak256(abi.encodePacked(ev));
