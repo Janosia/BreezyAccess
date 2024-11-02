@@ -3,6 +3,8 @@ pragma solidity ^0.8.17;
 
 import "./Case.sol";
 
+///@title contract to register a fresh evidence not linked to any other evidence or supporting information to any other pre-existing evidence
+
 contract Evidence is Case {
     function _register_evidence(
         string calldata evidence,
@@ -18,7 +20,7 @@ contract Evidence is Case {
     ) public payable {
         require(
             msg.sender == returnHI(case_number),
-            "only HI of related case can assign level"
+            "only Head Investigator of requested case can assign integrity level"
         );
         assign_inl(case_number, evidence);
     }
