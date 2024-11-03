@@ -17,9 +17,9 @@ contract("AssignRole", (accounts) => {
     
     const designation = "Lead Investigator";
     const user = accounts[0];
-    await assignRoleInstance.setRole(designation, user, {from: accounts[0],});
+    await assignRoleInstance.publicsetRole(designation, user);
 
-    const level = await assignRoleInstance.returnRole(user);
+    const level = await assignRoleInstance.publicreturnRole(user);
     assert.equal(level, 4, "User level should be  4");  
   });
 
@@ -29,15 +29,15 @@ contract("AssignRole", (accounts) => {
     
     const designation = "Lead Investigator";
     const user = accounts[0];
-    await assignRoleInstance.setRole(designation, user , {from: accounts[0],});
+    await assignRoleInstance.publicsetRole(designation, user );
 
-    const level = await assignRoleInstance.returnRole(user);
+    const level = await assignRoleInstance.publicreturnRole(user);
     assert.equal(level, 4, "User level should be  4");  
     try {
-      await assignRoleInstance.setRole(designation, user, { // duplicate registration
+      await assignRoleInstance.publicsetRole(designation, user, { // duplicate registration
         from: accounts[0],
       });
-      assert.fail("Expected an exception but none was thrown"); // hopefully i will never see you
+      assert.fail("Expected an exception but none was thrown"); 
     } catch (error) {
       assert.include(
         error.message,
@@ -48,13 +48,13 @@ contract("AssignRole", (accounts) => {
   });
 
   // test 3: no invalid role
-  it ("should not allow user with inavlid designation to be registered", async() =>{
+  it ("should not allow user with invalid designation to be registered", async() =>{
 
     const invalid = "Invalid";
     const user = accounts[0];
 
     try{
-        await assignRoleInstance.setRole(invalid, user, {from : accounts[0]});
+        await assignRoleInstance.publicsetRole(invalid, user, {from : accounts[0]});
         assert.fail("Expected Error but none was thrown");
     }catch(error){
         assert.include(
@@ -67,14 +67,14 @@ contract("AssignRole", (accounts) => {
 
   // test 4 : returnLevel function check
   it("should return assigned level of a registered user", async() => {
-    const qualification = " Lead Investigator";
+    const qualification = "Lead Investigator";
     const user = accounts[0];
 
-    await assignRoleInstance.setRole(qualification,user, {  // emits event for object registration
+    await assignRoleInstance.publicsetRole(qualification,user, {  // emits event for object registration
       from: accounts[0],
     });
 
-    const tx = await assignRoleInstance.returnRole(user);
+    const tx = await assignRoleInstance.publicreturnRole(user);
     assert.equal(tx, 4, "Level is not as expected");
   });
 });
