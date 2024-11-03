@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 contract AssignRole {
     mapping(string => uint) internal Levels;
     mapping(address => uint) internal Roles; // each address will have a IG level storing is like address : Integrity Level 1/2
-    address[] internal RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
+    mapping(address => uint) internal RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
 
     event RegistrationDone(string, address, uint);
 
@@ -20,20 +20,18 @@ contract AssignRole {
         return (Levels[designation]);
     }
 
-    function DoesExists(address user) internal view returns (bool) {
-        for (uint i = 0; i < RegisteredUsers.length; i++) {
-            if (RegisteredUsers[i] == user) {
-                return true;
-            }
+    function DoesUserExists(address user) internal view returns (bool) {
+        if (RegisteredUsers[user] == 1) {
+            return true;
         }
         return false;
     }
 
     function setRole(string calldata designation, address user) internal {
-        require(DoesExists(user) == false, "User Already Registered");
+        require(DoesUserExists(user) == false, "User Already Registered");
         require(getLevel(designation) > 0, "Invalid designation");
         Roles[user] = getLevel(designation);
-        RegisteredUsers.push(user);
+        RegisteredUsers[user] = 1;
         emit RegistrationDone(
             " User Registration Completed",
             user,
@@ -41,7 +39,21 @@ contract AssignRole {
         );
     }
     function returnRole(address user) internal view returns (uint) {
-        require(DoesExists(user) == true, "User is not registered");
+        require(DoesUserExists(user) == true, "User is not registered");
         return Roles[user];
+    }
+    ///@notice an interface used for testing since internal functions cannot be accessed from test suite
+    function publicsetRole(string calldata desig, address user) public {
+        setRole(desig, user);
+    }
+
+    function publicreturnRole(address user) public view returns (uint) {
+        uint ans = returnRole(user);
+        return (ans);
+    }
+
+    function publicDoesUserExists(address user) public view returns (bool) {
+        bool ans = DoesUserExists(user);
+        return (ans);
     }
 }
