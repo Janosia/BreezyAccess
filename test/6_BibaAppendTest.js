@@ -1,6 +1,6 @@
 
 const AssignRole = artifacts.require("./AssignRole");
-const AssignLevel = artifacts.require("./Case");
+const Case = artifacts.require("./Case");
 const BibaAppend = artifacts.require("./BibaAppend");
 
 // T1 : simple append for strictly greater than
@@ -10,23 +10,26 @@ const BibaAppend = artifacts.require("./BibaAppend");
 contract("BibaAppend", (accounts) => {
   
   let assignRoleInstance;
-  let assignLevelInstance;
+  let caseInstance;
   let bibaappendInstance;
   beforeEach(async () => {
     assignRoleInstance = await AssignRole.new({ from: accounts[0] });
-    assignLevelInstance = await AssignLevel.new({ from: accounts[0] });
-    bibaappendInstance = await BibaAppend.new(assignLevelInstance.address, assignRoleInstance.address, {from : accounts[0]});
+    caseInstance = await Case.new({ from: accounts[1] });
+    bibaappendInstance = await BibaAppend.new({from : accounts[0]});
   });
 
   // Test 1 : Simple Append with strictly greater than values
-  it("should allow append to those users having integrity level strictly greater than evidence", async() =>{
+  it("should allow append to those users having integrity Level strictly greater than evidence", async() =>{
     const desig = "Investigator" ;// 5
     const qualification = "Highly Uncertain"; //3
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
+
+    // register user
+    // create case
     
-    await assignLevelInstance.setLevel(qualification, key, {from: accounts[0]}); // register og evidence
-    await assignRoleInstance.setRole(desig,user, {from: accounts[0]}); // register user
+    await caseInstance.setlevel(key, {from: accounts[0]}); // register og evidence
+    await assignRoleInstance.publicsetRole(desig,user, {from: accounts[0]}); // register user
 
     const nkey = web3.utils.keccak256("Add to Sample"); // hash fro appended evidence
     const qua = "Certain"; // qualification of appended evidence
@@ -36,14 +39,14 @@ contract("BibaAppend", (accounts) => {
   });
 
   // Test 2 : Simple Append with equal values
-  it("should allow append to those users having integrity level equal to evidence", async() =>{
+  it("should allow append to those users having integrity Level equal to evidence", async() =>{
     const desig = "Investigator" ;// 5
     const qualification = "Probable"; //5
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await assignLevelInstance.setLevel(qualification, key, {from: accounts[0]}); // register evidence
-    await assignRoleInstance.setRole(desig,user, {from: accounts[0]}); // register user
+    await caseInstance.setlevel(qualification, key, {from: accounts[0]}); // register evidence
+    await assignRoleInstance.publicsetRole(desig,user, {from: accounts[0]}); // register user
 
     const nkey = web3.utils.keccak256("Add to Sample");
     const qua = "Certain";
@@ -59,8 +62,8 @@ contract("BibaAppend", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await assignLevelInstance.setLevel(qualification, key, {from: accounts[0]}); // register evidence
-    await assignRoleInstance.setRole(desig,user, {from: accounts[0]}); // register user
+    await caseInstance.setlevel(qualification, key, {from: accounts[0]}); // register evidence
+    await assignRoleInstance.publicsetRole(desig,user, {from: accounts[0]}); // register user
 
     const nkey = web3.utils.keccak256("Add to Sample");
     const qua = "Certain";
