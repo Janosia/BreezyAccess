@@ -6,7 +6,7 @@ contract AssignRole {
     mapping(address => uint) internal Roles; // each address will have a IG level storing is like address : Integrity Level 1/2
     mapping(address => uint) internal RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
 
-    event RegistrationDone(string, address, uint);
+    event UserRegistrationDone(string, address, uint);
 
     constructor() {
         Levels["Head Investigator"] = 1;
@@ -32,7 +32,7 @@ contract AssignRole {
         require(getLevel(designation) > 0, "Invalid designation");
         Roles[user] = getLevel(designation);
         RegisteredUsers[user] = 1;
-        emit RegistrationDone(
+        emit UserRegistrationDone(
             " User Registration Completed",
             user,
             Roles[user]

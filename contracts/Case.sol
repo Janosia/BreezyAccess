@@ -22,12 +22,11 @@ contract Case is AssignRole {
     uint[] Cases;
     mapping(uint => SCase) cases; // keep track of mulitple cases running
 
-    event RegistrationDone(string, string, uint);
+    event CaseRegistrationDone(string, string, uint);
     event InvestigatorRemoved(string, address, uint);
     event EvidenceAssignedLevel(string, bytes32);
     event EvidenceRegistered(string, bytes32, address);
     event EvidenceDeleted(string, uint, bytes32);
-    // event EvidenceObsolete(string, uint, bytes32);
     event CaseClosed(string, uint);
 
     ///@notice checks if case has already been created
@@ -42,13 +41,17 @@ contract Case is AssignRole {
 
     /// @notice creates a case
     /// @param name Name of the Case File ; @param case_number Unique Number assigned to case
-    function createcase(string memory name, uint case_number) public payable {
+    function createcase(string calldata name, uint case_number) public payable {
+        require(
+            publicDoesUserExists(msg.sender) == true,
+            "User is not registered"
+        );
         require(
             does_case_exists(case_number) == false,
             "Case is already created"
         );
         require(
-            returnRole(msg.sender) == 1,
+            publicreturnRole(msg.sender) == 1,
             "Only Head Investigator can create cases"
         );
         SCase storage newCase = cases[case_number];
@@ -60,7 +63,7 @@ contract Case is AssignRole {
         newCase.creationtime = block.timestamp;
         newCase.closetime = 0;
         Cases.push(case_number);
-        emit RegistrationDone("Case Registered", name, case_number);
+        emit CaseRegistrationDone("Case Registered", name, case_number);
     }
 
     ///@notice returns Head Investigator of a case
