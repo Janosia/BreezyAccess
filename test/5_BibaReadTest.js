@@ -18,7 +18,7 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await bibareadInstance.setlevel(qualification, key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.setlevel(key, {from: accounts[0]}); // register evidence
     
 
     const tx = await bibareadInstance.read_allowed(key, user);
@@ -33,7 +33,7 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await bibareadInstance.setelevel(qualification, key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.setelevel(key, {from: accounts[0]}); // register evidence
     await bibareadInstance.setRole(desig,user, {from: accounts[0]}); // register user
 
     const tx = await bibareadInstance.read_allowed(key, user);
@@ -48,7 +48,7 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await bibareadInstance.setlevel(qualification, key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.setlevel(key, {from: accounts[0]}); // register evidence
     await bibareadInstance.setRole(desig,user, {from: accounts[0]}); // register user
 
     
