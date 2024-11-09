@@ -6,7 +6,7 @@ import "./AssignRole.sol";
 contract Register is AssignRole{
     
     function register_user(string calldata designation) public {  
-        setRole(designation, msg.sender);
+        publicsetRole(designation, msg.sender);
     }
-    Register public register;
+    // Register public register;
 }

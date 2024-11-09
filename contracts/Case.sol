@@ -2,11 +2,11 @@
 pragma solidity ^0.8.21;
 
 import "./AssignRole.sol";
-
+import "./Register.sol";
 ///@title this contract checks whether requestor is head investigator or not
 ///and then allows creation of case
 
-contract Case is AssignRole {
+contract Case is AssignRole, Register {
     struct SCase {
         string ID;
         bytes32 IDhash;
@@ -92,7 +92,8 @@ contract Case is AssignRole {
         newC.investigators[inv] = 1;
     }
 
-    /// @notice checks whethere evidence exists
+    /// @notice checks whether evidence exists
+    /// @param case_number unique id of case, @param key hash of evidence which has to be assigned level 
     function does_evidence_exists(
         uint case_number,
         bytes32 key
@@ -133,30 +134,25 @@ contract Case is AssignRole {
     }
 
     /// @notice allows Head Investigator to assign integrity level to an evidence
-    function setlevel(bytes32 key, uint case_num) public payable {
+    function setlevel(bytes32 key, uint case_num, uint level) internal {
         SCase storage nc = cases[case_num];
-        uint lvl = nc.evid;
-        if (lvl == 0) {
-            lvl = lvl + 1;
-        }
-        if (lvl > 7) {
-            lvl = 7;
-        }
-        nc.AssignedEvidences[key] = lvl; // addition to Assigned evidences
+        nc.AssignedEvidences[key] = level; // addition to Assigned evidences
         nc.UnassignedEvidences[key] = 0; // removal from Unassigned evidences
         emit EvidenceAssignedLevel("Evidence as been assigned a level", key);
     }
 
-    function assign_inl(uint case_num, string calldata ev) public payable {
+    ///@notice caller function to assign level to an evidence 
+    function assign_inl(uint case_num, string calldata ev, uint level) public payable {
         // assign level
         bytes32 key = keccak256(abi.encodePacked(ev));
+        require(returnHI(case_num)==msg.sender, "Only Head Investigator can assign level to evidence");
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(
             does_evidence_exists(case_num, key) == false,
             "Evidence exists"
         );
         require(is_level_assigned(case_num, key) == false, "Level assigned");
-        setlevel(key, case_num);
+        setlevel(key, case_num, level);
     }
 
     ///@notice allows user to register new information
@@ -196,7 +192,7 @@ contract Case is AssignRole {
     }
 
     ///@notice allows deletion of evidence
-    function delete_evidence(bytes32 key, uint case_num) public payable {
+    function delete_evidence(bytes32 key, uint case_num) internal {
         SCase storage nc = cases[case_num];
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(

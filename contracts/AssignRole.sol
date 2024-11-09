@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 contract AssignRole {
     mapping(string => uint) internal Levels;
     mapping(address => uint) internal Roles; // each address will have a IG level storing is like address : Integrity Level 1/2
-    mapping(address => uint) internal RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
+    mapping(address => uint)  RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
 
     event UserRegistrationDone(string, address, uint);
 
@@ -38,6 +38,8 @@ contract AssignRole {
             Roles[user]
         );
     }
+
+    ///@notice returns role of an user 
     function returnRole(address user) internal view returns (uint) {
         require(DoesUserExists(user) == true, "User is not registered");
         return Roles[user];

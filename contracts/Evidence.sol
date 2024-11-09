@@ -16,12 +16,12 @@ contract Evidence is Case {
 
     function level_assignment(
         string calldata evidence,
-        uint case_number
+        uint case_number, uint level
     ) public payable {
         require(
             msg.sender == returnHI(case_number),
             "only Head Investigator of requested case can assign integrity level"
         );
-        assign_inl(case_number, evidence);
+        assign_inl(case_number, evidence, level);
     }
 }
