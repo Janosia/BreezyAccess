@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
-
 import "./AssignRole.sol";
 import "./Register.sol";
 ///@title this contract checks whether requestor is head investigator or not
 ///and then allows creation of case
-
 contract Case is AssignRole, Register {
     struct SCase {
         string ID;
@@ -21,14 +19,12 @@ contract Case is AssignRole, Register {
     }
     uint[] Cases;
     mapping(uint => SCase) cases; // keep track of mulitple cases running
-
     event CaseRegistrationDone(string, string, uint);
     event InvestigatorRemoved(string, address, uint);
     event EvidenceAssignedLevel(string, bytes32);
     event EvidenceRegistered(string, bytes32, address);
     event EvidenceDeleted(string, uint, bytes32);
     event CaseClosed(string, uint);
-
     ///@notice checks if case has already been created
     function does_case_exists(uint num) internal view returns (bool) {
         for (uint i = 0; i < Cases.length; i++) {

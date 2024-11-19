@@ -21,7 +21,6 @@ contract("BibaAppend", (accounts) => {
   // Test 1 : Simple Append with strictly greater than values
   it("should allow append to those users having integrity Level strictly greater than evidence", async() =>{
     const desig = "Investigator" ;// 5
-    const qualification = "Highly Uncertain"; //3
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
 
@@ -41,11 +40,10 @@ contract("BibaAppend", (accounts) => {
   // Test 2 : Simple Append with equal values
   it("should allow append to those users having integrity Level equal to evidence", async() =>{
     const desig = "Investigator" ;// 5
-    const qualification = "Probable"; //5
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await caseInstance.setlevel(qualification, key, {from: accounts[0]}); // register evidence
+    await caseInstance.setlevel(key, {from: accounts[0]}); // register evidence
     await assignRoleInstance.publicsetRole(desig,user, {from: accounts[0]}); // register user
 
     const nkey = web3.utils.keccak256("Add to Sample");
@@ -58,11 +56,10 @@ contract("BibaAppend", (accounts) => {
   // Test 3 : Simple Append which should be rejected
   it("should allow not append rights to those users having integrity level strictly lower than evidence", async() =>{
     const desig = "Investigator" ;// 5
-    const qualification = "Certain"; //7
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await caseInstance.setlevel(qualification, key, {from: accounts[0]}); // register evidence
+    await caseInstance.setlevel(key, {from: accounts[0]}); // register evidence
     await assignRoleInstance.publicsetRole(desig,user, {from: accounts[0]}); // register user
 
     const nkey = web3.utils.keccak256("Add to Sample");

@@ -1,22 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
-
 import "./AssignRole.sol";
 import "./Case.sol";
-
 ///@title allows additional information/supporting material to be added to an existing evidence
 contract BibaAppend is AssignRole, Case {
     mapping(bytes32 => mapping(uint => bytes32)) private AppendedEvidence; // keep track of which evidence was appended to, but an evidence can be appended to multiple times
     mapping(bytes32 => uint) private TrackerMapping; // keep track of how many times and evidence was appended to
-
-    //Evidence public evidence;
     event AppendAllowed(string, address, bytes32, bytes32); // event for blockchain
-
     function returnTimes(bytes32 key) private view returns (uint) {
         // return number of times an evidence was appended to
         return TrackerMapping[key];
     }
-
+    
+    ///@notice checks if user is allowed to append to an existing evidence anf if yes, then append is completed 
     function append_allowed(
         bytes32 key,
         address ad_user,
