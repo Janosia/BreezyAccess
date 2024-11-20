@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.9;
 import "./AssignRole.sol";
 import "./Register.sol";
 ///@title this contract checks whether requestor is head investigator or not
@@ -26,7 +26,7 @@ contract Case is AssignRole, Register {
     event EvidenceDeleted(string, uint, bytes32);
     event CaseClosed(string, uint);
     ///@notice checks if case has already been created
-    function does_case_exists(uint num) internal view returns (bool) {
+    function does_case_exists(uint num) public view returns (bool) {
         for (uint i = 0; i < Cases.length; i++) {
             if (Cases[i] == num) {
                 return true;

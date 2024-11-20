@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./BibaAppend.css";
 import Web3 from "web3";
 
-import AssignRoleABI from "./build/contracts/AssignRole.json";
-import BibaAppendABI from "./build/contracts/BibaAppend.json";
-import CaseABI from "./build/contracts/Case.json";
+import AssignRoleABI from "./contracts/AssignRole.json";
+import BibaAppendABI from "./contracts/BibaAppend.json";
+import CaseABI from "./contracts/Case.json";
 
 const BibaAppendComponent = () => {
   const [web3, setWeb3] = useState(null);

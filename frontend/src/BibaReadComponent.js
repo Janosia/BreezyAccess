@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 
-import AssignRoleABI from "./build/contracts/AssignRole.json";
-import BibaReadABI from "./build/contracts/BibaRead.json"
-import CaseABI from "./build/contracts/Case.json";
+import AssignRoleABI from "./contracts/AssignRole.json";
+import BibaReadABI from "./contracts/BibaRead.json"
+import CaseABI from "./contracts/Case.json";
 
 
 

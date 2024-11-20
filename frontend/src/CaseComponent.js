@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import CaseAbi from './build/contracts/Case.json';
+import CaseAbi from './contracts/Case.json';
+import AssignRoleAbi from "./contracts/AssignRole.json";
 
 function App() {
   const [web3, setWeb3] = useState(null);
   const [accounts, setAccounts] = useState("");
-  const [contract, setContract] = useState(null);
+  const[Rolecontract,setroleContract]=useState(null);
+  const [Casecontract, setcaseContract] = useState(null);
   const [message, setMessage] = useState('');
  
 
@@ -17,12 +19,19 @@ function App() {
       const deployedNetwork = CaseAbi.networks[networkId];
 
       const contractRegister = new web3.eth.Contract(CaseAbi.abi, deployedNetwork.address);
+      
+      const deployedNetworkRole = AssignRoleAbi.networks[networkId];
+      const contractRole = new web3.eth.Contract(
+        AssignRoleAbi.abi,
+        deployedNetworkRole.address
+      );
+      setroleContract(contractRole);
       await provider.request({ method: "eth_requestAccounts" });
           // Accounts now exposed
           const accs = await web3.eth.getAccounts();
           setAccounts(accs[0]);
       setWeb3(web3);
-      setContract(contractRegister);    
+      setcaseContract(contractRegister);    
     }
     provider && template();
   }, []);
@@ -34,7 +43,19 @@ function App() {
       const caseName=document.querySelector("#value1").value;
       const caseNumber=document.querySelector("#value2").value;
       const gasLimit = 500000;
-      const transaction=await contract.methods.createcase(caseName, parseInt(caseNumber, 10),accounts).send({ from: accounts, gas: gasLimit, });
+      const publiDoes= await Rolecontract.methods.publicDoesUserExists(accounts);
+      if(publiDoes){
+        console.log("public does user exists working");
+      }
+      const publicreturnr=await Rolecontract.methods.publicreturnRole(accounts);
+      if(publicreturnr===1){
+        console.log("return role working");
+      }
+      const caseexists= await Casecontract.methods.does_case_exists(caseNumber);
+      if(!caseexists){
+        console.log("case does not exists");
+      }
+      const transaction=await Casecontract.methods.createcase(caseName, caseNumber).send({ from: accounts, gas: gasLimit, });
       setMessage('Case created successfully!');
       const transactionHash = transaction.transactionHash;
       console.log("Transaction Hash:", transactionHash);
@@ -53,7 +74,7 @@ function App() {
   const caseDetails = async()=>{
     try{
       const caseNumber=document.querySelector("#value2").value;
-      await contract.methods.getCaseDetails(caseNumber).call();
+      await Casecontract.methods.getCaseDetails(caseNumber).call();
       console.log('Case Details:', caseDetails);
     }
     catch(error){
@@ -67,7 +88,7 @@ function App() {
       const gasLimit = 200000;
       const caseNumber=document.querySelector("#value2").value;
       const investigatorAddress=document.querySelector("#value3").value;
-      const transaction=await contract.methods.add_investigator(investigatorAddress, parseInt(caseNumber, 10)).send({ from: accounts,gas: gasLimit, });
+      const transaction=await Casecontract.methods.add_investigator(investigatorAddress, parseInt(caseNumber, 10)).send({ from: accounts,gas: gasLimit, });
       setMessage('Investigator added successfully!');
       const transactionHash = transaction.transactionHash;
       console.log("Transaction Hash:", transactionHash);

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.9;
 import "./AssignRole.sol";
 import "./Case.sol";
 ///@title allows additional information/supporting material to be added to an existing evidence

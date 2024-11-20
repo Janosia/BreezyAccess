@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 
-import AssignRoleAbi from "./build/contracts/AssignRole.json";
+import AssignRoleAbi from "./contracts/AssignRole.json";
 
 
 
@@ -39,7 +39,7 @@ function AssignRoleComponent() {
     const handleSetRole = async () => {
       try {
         // Check if the user already exists
-        const userExists = await contract.methods.DoesExists(userAddress).call();
+        const userExists = await contract.methods.DoesUserExists(userAddress).call();
     
         if (!userExists) {
           const gasLimit = 200000;

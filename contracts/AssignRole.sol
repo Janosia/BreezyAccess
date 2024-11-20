@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.9;
 
 ///@title creation of user and role assignment
 contract AssignRole {
-    mapping(string => uint) internal Levels;
-    mapping(address => uint) internal Roles; // each address will have a IG level storing is like address : Integrity Level 
+    mapping(string => uint)  Levels;
+    mapping(address => uint)  Roles; // each address will have a IG level storing is like address : Integrity Level 
     mapping(address => uint)  RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
     event UserRegistrationDone(string, address, uint);
     constructor() {
@@ -16,13 +16,13 @@ contract AssignRole {
     function getLevel(string calldata designation) internal view returns (uint) {
         return (Levels[designation]);}
     ///@notice checks if user is already existing
-    function DoesUserExists(address user) internal view returns (bool) {
+    function DoesUserExists(address user) public view returns (bool) {
         if (RegisteredUsers[user] == 1) {
             return true;}
         return false;
     }
     ///@notice allows an user to create account and set role
-    function setRole(string calldata designation, address user) internal {
+    function setRole(string calldata designation, address user) public {
         require(DoesUserExists(user) == false, "User Already Registered");
         require(getLevel(designation) > 0, "Invalid designation");
         Roles[user] = getLevel(designation);
@@ -31,7 +31,7 @@ contract AssignRole {
     }
 
     ///@notice returns role of an user 
-    function returnRole(address user) internal view returns (uint) {
+    function returnRole(address user) public view returns (uint) {
         require(DoesUserExists(user) == true, "User is not registered");
         return Roles[user];
     }

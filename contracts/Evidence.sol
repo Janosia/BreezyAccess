@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.9;
 import "./Case.sol";
 ///@title contract to register a fresh evidence not linked to any other evidence or supporting information to any other pre-existing evidence
 contract Evidence is Case {

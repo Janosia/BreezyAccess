@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import EvidenceAbi from './build/contracts/Evidence.json';
-import AssignRole from './build/contracts/AssignRole.json';
+import EvidenceAbi from './contracts/Evidence.json';
+import AssignRole from './contracts/AssignRole.json';
 
 function EvidenceComponent() {
   const [web3, setWeb3] = useState(null);
