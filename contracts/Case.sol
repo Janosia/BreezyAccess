@@ -40,7 +40,7 @@ contract Case is AssignRole, Register {
     /// @param name Name of the Case File ; @param case_number Unique Number assigned to case
     function createcase(string calldata name, uint case_number) public payable {
         require(
-            publicDoesUserExists(msg.sender) == true,
+            DoesUserExists(msg.sender) == true,
             "User is not registered"
         );
         require(
@@ -145,8 +145,8 @@ contract Case is AssignRole, Register {
         require(returnHI(case_num)==msg.sender, "Only Head Investigator can assign level to evidence");
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(
-            does_evidence_exists(case_num, key) == false,
-            "Evidence exists"
+            does_evidence_exists(case_num, key) == true,
+            "Evidence does not exists"
         );
         require(is_level_assigned(case_num, key) == false, "Level assigned");
         setlevel(key, case_num, level);

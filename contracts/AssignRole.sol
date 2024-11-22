@@ -5,7 +5,7 @@ pragma solidity ^0.8.17;
 contract AssignRole {
     mapping(string => uint) internal Levels;
     mapping(address => uint) internal Roles; // each address will have a IG level storing is like address : Integrity Level 
-    mapping(address => uint)  RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
+    mapping(address => uint)  internal RegisteredUsers; // dynamic array of all registered users, to check whether they exists or not
     event UserRegistrationDone(string, address, uint);
     constructor() {
         Levels["Head Investigator"] = 1;

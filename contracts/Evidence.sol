@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 import "./Case.sol";
+import "./AssignRole.sol";
 ///@title contract to register a fresh evidence not linked to any other evidence or supporting information to any other pre-existing evidence
-contract Evidence is Case {
+contract Evidence is AssignRole, Case {
     ///@notice allows an user to add evidence
     function _register_evidence(
         string calldata evidence,
