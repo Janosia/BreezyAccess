@@ -46,11 +46,11 @@ contract("Case", (accounts) => {
     await caseInstance.add_investigator(investigatorAddress, caseNumber, { from: accounts[1] });
 
     const isInvestigatorAddedBeforeRemoval = await caseInstance.is_authorized(investigatorAddress, caseNumber);
-    assert.isequal(isInvestigatorAddedBeforeRemoval, true, "Investigator added to the case before removal");
+    assert.equal(isInvestigatorAddedBeforeRemoval, true, "Investigator added to the case before removal");
 
     await caseInstance.remove_investigator(caseNumber, investigatorAddress, { from: accounts[0] });
 
     const isInvestigatorAddedAfterRemoval = await caseInstance.is_authorized(investigatorAddress, caseNumber);
-    assert.isequal(isInvestigatorAddedAfterRemoval, false, "Investigator has been removed from the case");
+    assert.equal(isInvestigatorAddedAfterRemoval, false, "Investigator has been removed from the case");
   });
 });
