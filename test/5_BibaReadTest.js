@@ -1,9 +1,5 @@
 const BibaRead = artifacts.require("./BibaRead");
 
-// T1 : simple read strictly less than
-// T2 : simple read eqaul
-// T3 : rejected read
-
 contract("BibaRead", (accounts) => {
   
   let bibareadInstance;
@@ -18,7 +14,7 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await bibareadInstance.setlevel(key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.public_set_level(key, {from: accounts[0]}); // register evidence
     
 
     const tx = await bibareadInstance.read_allowed(key, user);
@@ -33,7 +29,7 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await bibareadInstance.setelevel(key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.public_set_level(key, {from: accounts[0]}); // register evidence
     await bibareadInstance.setRole(desig,user, {from: accounts[0]}); // register user
 
     const tx = await bibareadInstance.read_allowed(key, user);
@@ -48,7 +44,7 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await bibareadInstance.setlevel(key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.public_set_level(key, {from: accounts[0]}); // register evidence
     await bibareadInstance.setRole(desig,user, {from: accounts[0]}); // register user
 
     

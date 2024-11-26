@@ -6,7 +6,10 @@ import "./Case.sol";
 contract BibaAppend is AssignRole, Case {
     mapping(bytes32 => mapping(uint => bytes32)) private AppendedEvidence; // keep track of which evidence was appended to, but an evidence can be appended to multiple times
     mapping(bytes32 => uint) private TrackerMapping; // keep track of how many times and evidence was appended to
-    event AppendAllowed(string, address, bytes32, bytes32); // event for blockchain
+    event AppendAllowed(string, address, bytes32, bytes32);
+    error AppendNotAllowed(string, address, string, uint, string,uint);
+    event LevelReturned(string, uint);
+    event RoleReturned(string, uint);
     function returnTimes(bytes32 key) private view returns (uint) {
         // return number of times an evidence was appended to
         return TrackerMapping[key];
@@ -18,23 +21,22 @@ contract BibaAppend is AssignRole, Case {
         address ad_user,
         bytes32 key_of_new,
         uint case_num
-    ) private returns (bool) {
+    ) public returns (bool) {
         require(
             is_authorized(ad_user, case_num) == true,
             "Cannot interact with this evidence"
         );
-        uint L = return_level(case_num, key);
-        uint R = returnRole(ad_user);
-        bool val = (R >= L);
+        uint256 level = return_level(case_num, key);
+        emit LevelReturned("Level of evidence is ", level);
+        uint256 role = returnRole(ad_user);
+        emit RoleReturned("Level of investigator is ", role);
+        bool val = (role >= level);
 
-        require(val == true, "User is not authorized to append to evidence");
+        require(val == true, "User does not have the authority i.e. level to assign evidence. Investigator needs to increase level");
 
         uint times = returnTimes(key); // find number of times the original evidence was appended to
         uint ntime = times + 1;
         TrackerMapping[key] = ntime; // update times the original evidenece was appended to
-
-        // Take input from user; this is placeholder
-
         bytes32 newhash = keccak256(abi.encodePacked(key, key_of_new)); // calculate new hash
         string memory str = "Hell";
         register_evi(case_num, str, msg.sender); // create a new evidence with new founf evidence related to og evidence

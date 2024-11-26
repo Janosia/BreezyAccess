@@ -22,7 +22,8 @@ contract Case is AssignRole, Register {
     mapping(uint => SCase) cases; // keep track of mulitple cases running
     event CaseRegistrationDone(string, string, uint);
     event InvestigatorRemoved(string, address, uint);
-    event EvidenceAssignedLevel(string, bytes32);
+    event InvestigatorAdded(string, uint, string,address,string,  uint);
+    event EvidenceAssignedLevel(string, bytes32, string, uint, string, uint);
     event EvidenceRegistered(string, bytes32, address);
     event EvidenceDeleted(string, uint, bytes32);
     event CaseClosed(string, uint);
@@ -48,7 +49,7 @@ contract Case is AssignRole, Register {
             "Case is already created"
         );
         require(
-            publicreturnRole(msg.sender) == 1,
+            returnRole(msg.sender) == 1,
             "Only Head Investigator can create cases"
         );
         SCase storage newCase = cases[case_number];
@@ -87,6 +88,8 @@ contract Case is AssignRole, Register {
     function add_investigator(address inv, uint num) public payable {
         SCase storage newC = cases[num];
         newC.investigators[inv] = 1;
+        uint role_inv = publicreturnRole(inv);
+        emit InvestigatorAdded("Investigator added to case", num , "address", inv, "level", role_inv );
     }
 
     /// @notice checks whether evidence exists
@@ -135,7 +138,7 @@ contract Case is AssignRole, Register {
         SCase storage nc = cases[case_num];
         nc.AssignedEvidences[key] = level; // addition to Assigned evidences
         nc.UnassignedEvidences[key] = 0; // removal from Unassigned evidences
-        emit EvidenceAssignedLevel("Evidence as been assigned a level", key);
+        emit EvidenceAssignedLevel("Evidence", key, "assigned level", level, "for case", case_num);
     }
 
     ///@notice caller function to assign level to an evidence 
@@ -176,7 +179,7 @@ contract Case is AssignRole, Register {
     function return_level(
         uint case_num,
         bytes32 key
-    ) public payable returns (uint) {
+    ) public view returns (uint) {
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(
             does_evidence_exists(case_num, key) == true,
@@ -230,5 +233,9 @@ contract Case is AssignRole, Register {
             return 0;
         }
         return 1;
+    }
+
+    function public_set_level(bytes32 key, uint case_num, uint level) public{
+        setlevel(key, case_num, level);
     }
 }

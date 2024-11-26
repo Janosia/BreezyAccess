@@ -41,8 +41,7 @@ contract AssignRole {
         setRole(desig, user);
     }
     function publicreturnRole(address user) public view returns (uint) {
-        uint ans = returnRole(user);
-        return (ans);
+        return(returnRole(user));
     }
     function publicDoesUserExists(address user) public view returns (bool) {
         bool ans = DoesUserExists(user);
