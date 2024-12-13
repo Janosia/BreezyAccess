@@ -11,6 +11,8 @@ contract Case is AssignRole, Register {
         mapping(bytes32 => uint) AssignedEvidences;
         mapping(bytes32 => uint) UnassignedEvidences;
         mapping(address => uint) investigators;
+        mapping(bytes32 => string) evCID;
+        bytes32 key;
         address HI;
         uint evid;
         uint stipulatedtime; // once case is over, evidence of a case will be deleted after this much time
@@ -22,9 +24,10 @@ contract Case is AssignRole, Register {
     event CaseRegistrationDone(string, string, uint);
     event InvestigatorRemoved(string, address, uint);
     event EvidenceAssignedLevel(string, bytes32);
-    event EvidenceRegistered(string, bytes32, address);
+    event EvidenceRegistered(string, address, string, bytes32);
     event EvidenceDeleted(string, uint, bytes32);
     event CaseClosed(string, uint);
+    event CanRegisterEvidence(string, address, string,uint);
     ///@notice checks if case has already been created
     function does_case_exists(uint num) public view returns (bool) {
         for (uint i = 0; i < Cases.length; i++) {
@@ -151,23 +154,46 @@ contract Case is AssignRole, Register {
         setlevel(key, case_num, level);
     }
 
-    ///@notice allows user to register new information
-    /// @param case_num Unique case ID; @param ev information ; @param user address of requestor
+    ///@notice check if user is authorised to add evidence
+    /// @param case_num Unique case ID;  @param user address of requestor
     function register_evi(
         uint case_num,
-        string memory ev,
         address user
     ) public payable {
-        bytes32 key = keccak256(abi.encodePacked(ev));
+        // bytes32 key = keccak256(abi.encodePacked(ev));
         require(does_case_exists(case_num) == true, "Case does not exists");
-        require(
-            does_evidence_exists(case_num, key) == false,
-            "Evidence exists"
-        );
+        // require(
+        //     does_evidence_exists(case_num, key) == false,
+        //     "Evidence exists"
+        // );
+        // SCase storage nC = cases[case_num];
+        // nC.UnassignedEvidences[key] = 1;
+        // nC.evid += 1;
+        require(is_authorized(user, case_num) == true, "User not authorised to add evidence to case");
+        emit CanRegisterEvidence("User", user, " can register evidence to case ", case_num);
+    }
+
+    /// @notice returns if an AES key already exists
+    function returnAESkey(uint case_num) public view returns(bytes32){
         SCase storage nC = cases[case_num];
-        nC.UnassignedEvidences[key] = 1;
+        return nC.key;
+    }
+    ///@notice to check if a key exists in case
+    function does_key_Exists(uint case_num) public view returns(bool){
+        SCase storage nC = cases[case_num];
+        require(nC.key.length>0, "Key does not exists");
+        return true;
+    }
+    ///@notice allow user to add evidence 
+    /// @param case_num Unique case ID;  @param user address of requestor; ///@param CID from IPFS; ///@param AES key used for AONT 
+    function add_evidence(uint case_num,address user, string memory CID, bytes32 AESkey) public payable {
+        bytes32 KC = keccak256(abi.encodePacked(CID));
+        SCase storage nC = cases[case_num];
+        nC.UnassignedEvidences[KC] = 1;
         nC.evid += 1;
-        emit EvidenceRegistered("Evidence has been registered by", key, user);
+        nC.evCID[KC]=CID;
+        nC.key = AESkey;
+        emit EvidenceRegistered("User", user,  "registered evidence", KC);
     }
 
     ///@notice return level of integrity assigned to an evidence
