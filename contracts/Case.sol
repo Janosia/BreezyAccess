@@ -19,8 +19,9 @@ contract Case is AssignRole, Register {
         uint creationtime;
         uint closetime;
     }
-    uint[] Cases;
-    mapping(uint => SCase) cases; // keep track of mulitple cases running
+    mapping(uint=>uint) Cases;
+    mapping(uint=>address)Case_Head_Inv;
+    mapping(uint => SCase) active_cases; // keep track of mulitple cases running
     event CaseRegistrationDone(string, string, uint);
     event InvestigatorRemoved(string, address, uint);
     event EvidenceAssignedLevel(string, bytes32);
@@ -30,10 +31,8 @@ contract Case is AssignRole, Register {
     event CanRegisterEvidence(string, address, string,uint);
     ///@notice checks if case has already been created
     function does_case_exists(uint num) public view returns (bool) {
-        for (uint i = 0; i < Cases.length; i++) {
-            if (Cases[i] == num) {
-                return true;
-            }
+        if(Cases[num]==1){
+            return true;
         }
         return false;
     }
@@ -53,7 +52,7 @@ contract Case is AssignRole, Register {
             publicreturnRole(msg.sender) == 1,
             "Only Head Investigator can create cases"
         );
-        SCase storage newCase = cases[case_number];
+        SCase storage newCase = active_cases[case_number];
         newCase.ID = name;
         newCase.IDhash = keccak256(abi.encodePacked(name));
         newCase.HI = msg.sender;
@@ -61,14 +60,13 @@ contract Case is AssignRole, Register {
         newCase.stipulatedtime = 25;
         newCase.creationtime = block.timestamp;
         newCase.closetime = 0;
-        Cases.push(case_number);
+        Cases[case_number]=1;
         emit CaseRegistrationDone("Case Registered", name, case_number);
     }
 
     ///@notice returns Head Investigator of a case
     function returnHI(uint case_number) public payable returns (address) {
-        SCase storage newCase = cases[case_number];
-        return (newCase.HI);
+        return (Case_Head_Inv[case_number]);
     }
 
     ///@notice returns whether an user is authorised to work on a case
@@ -78,7 +76,7 @@ contract Case is AssignRole, Register {
         uint number
     ) public view returns (bool) {
         // DAC
-        SCase storage nC = cases[number];
+        SCase storage nC = active_cases[number];
         if (nC.investigators[user] == 1) {
             return true;
         }
@@ -87,7 +85,7 @@ contract Case is AssignRole, Register {
 
     /// @notice this introduces DAC, allows Head Investigator to modify access rights
     function add_investigator(address inv, uint num) public payable {
-        SCase storage newC = cases[num];
+        SCase storage newC = active_cases[num];
         newC.investigators[inv] = 1;
     }
 
@@ -98,7 +96,7 @@ contract Case is AssignRole, Register {
         bytes32 key
     ) public view returns (bool) {
         require(does_case_exists(case_number) == true, "Case does not exists");
-        SCase storage c = cases[case_number];
+        SCase storage c = active_cases[case_number];
         if (c.AssignedEvidences[key] > 0) {
             return true;
         }
@@ -113,7 +111,7 @@ contract Case is AssignRole, Register {
         uint case_number,
         bytes32 key
     ) public view returns (bool) {
-        SCase storage c = cases[case_number];
+        SCase storage c = active_cases[case_number];
         if (c.UnassignedEvidences[key] == 1) {
             return false;
         }
@@ -123,7 +121,7 @@ contract Case is AssignRole, Register {
     ///@notice DAC policy allows removal of an investigator from case
     function remove_investigator(uint case_number, address inv) public payable {
         // remove an investigator from DAC policy
-        SCase storage nC = cases[case_number];
+        SCase storage nC = active_cases[case_number];
         nC.investigators[inv] = 0;
         emit InvestigatorRemoved(
             "Investigator has been removed from case",
@@ -134,7 +132,7 @@ contract Case is AssignRole, Register {
 
     /// @notice allows Head Investigator to assign integrity level to an evidence
     function setlevel(bytes32 key, uint case_num, uint level) internal {
-        SCase storage nc = cases[case_num];
+        SCase storage nc = active_cases[case_num];
         nc.AssignedEvidences[key] = level; // addition to Assigned evidences
         nc.UnassignedEvidences[key] = 0; // removal from Unassigned evidences
         emit EvidenceAssignedLevel("Evidence as been assigned a level", key);
@@ -162,25 +160,18 @@ contract Case is AssignRole, Register {
     ) public payable {
         // bytes32 key = keccak256(abi.encodePacked(ev));
         require(does_case_exists(case_num) == true, "Case does not exists");
-        // require(
-        //     does_evidence_exists(case_num, key) == false,
-        //     "Evidence exists"
-        // );
-        // SCase storage nC = cases[case_num];
-        // nC.UnassignedEvidences[key] = 1;
-        // nC.evid += 1;
         require(is_authorized(user, case_num) == true, "User not authorised to add evidence to case");
         emit CanRegisterEvidence("User", user, " can register evidence to case ", case_num);
     }
 
     /// @notice returns if an AES key already exists
     function returnAESkey(uint case_num) public view returns(bytes32){
-        SCase storage nC = cases[case_num];
+        SCase storage nC = active_cases[case_num];
         return nC.key;
     }
     ///@notice to check if a key exists in case
     function does_key_Exists(uint case_num) public view returns(bool){
-        SCase storage nC = cases[case_num];
+        SCase storage nC = active_cases[case_num];
         require(nC.key.length>0, "Key does not exists");
         return true;
     }
@@ -188,7 +179,7 @@ contract Case is AssignRole, Register {
     /// @param case_num Unique case ID;  @param user address of requestor; ///@param CID from IPFS; ///@param AES key used for AONT 
     function add_evidence(uint case_num,address user, string memory CID, bytes32 AESkey) public payable {
         bytes32 KC = keccak256(abi.encodePacked(CID));
-        SCase storage nC = cases[case_num];
+        SCase storage nC = active_cases[case_num];
         nC.UnassignedEvidences[KC] = 1;
         nC.evid += 1;
         nC.evCID[KC]=CID;
@@ -208,14 +199,14 @@ contract Case is AssignRole, Register {
             "Evidence does not exists"
         );
         require(is_level_assigned(case_num, key) == true, "Evidence not valid");
-        SCase storage nc = cases[case_num];
+        SCase storage nc = active_cases[case_num];
         uint lvl = nc.AssignedEvidences[key];
         return lvl;
     }
 
     ///@notice allows deletion of evidence
     function delete_evidence(bytes32 key, uint case_num) internal {
-        SCase storage nc = cases[case_num];
+        SCase storage nc = active_cases[case_num];
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(
             is_closed(case_num) == 1,
@@ -240,7 +231,7 @@ contract Case is AssignRole, Register {
             returnRole(msg.sender) == 1,
             "Only Head Investigator can create cases"
         );
-        SCase storage nc = cases[case_num];
+        SCase storage nc = active_cases[case_num];
         require(
             nc.HI == msg.sender,
             "Only Head Investigator of the case can close it."
@@ -250,7 +241,7 @@ contract Case is AssignRole, Register {
     }
 
     function is_closed(uint case_num) internal view returns (uint) {
-        SCase storage nc = cases[case_num];
+        SCase storage nc = active_cases[case_num];
         if (nc.closetime == 0) {
             return 0;
         }
