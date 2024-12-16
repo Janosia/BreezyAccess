@@ -4,7 +4,7 @@ import "./AssignRole.sol";
 import "./Register.sol";
 ///@title this contract checks whether requestor is head investigator or not
 ///and then allows creation of case
-contract Case is AssignRole, Register {
+contract Case is AssignRole{
     struct SCase {
         string ID;
         bytes32 IDhash;
