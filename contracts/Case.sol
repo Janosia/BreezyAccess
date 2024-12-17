@@ -5,7 +5,7 @@ import "./Register.sol";
 ///@title this contract checks whether requestor is head investigator or not
 ///and then allows creation of case
 /// governs evidence addition, deletion, also has functions for managing DAC
-contract Case is AssignRole, Register {
+contract Case is AssignRole{
     struct SCase {
         string ID;
         bytes32 IDhash;
@@ -14,12 +14,12 @@ contract Case is AssignRole, Register {
         mapping(address => uint) investigators;
         address HI;
         uint evid;
-        uint stipulatedtime; // once case is over, evidence of a case will be deleted after this much time
+        uint stipulatedtime;
         uint creationtime;
         uint closetime;
     }
     uint[] Cases;
-    mapping(uint => SCase) cases; // keep track of mulitple cases running
+    mapping(uint => SCase) cases;
     event CaseRegistrationDone(string, string, uint);
     event InvestigatorRemoved(string, address, uint);
     event InvestigatorAdded(string, uint, string,address,string,  uint);
@@ -34,9 +34,7 @@ contract Case is AssignRole, Register {
                 return true;
             }
         }
-        return false;
-    }
-
+        return false;}
     /// @notice creates a case
     /// @param name Name of the Case File ; @param case_number Unique Number assigned to case
     function createcase(string calldata name, uint case_number) public payable {
