@@ -15,7 +15,7 @@ contract Case is AssignRole{
         bytes32 key;
         address HI;
         uint evid;
-        uint stipulatedtime; // once case is over, evidence of a case will be deleted after this much time
+        uint stipulatedtime;
         uint creationtime;
         uint closetime;
     }
@@ -39,7 +39,7 @@ contract Case is AssignRole{
 
     /// @notice creates a case
     /// @param name Name of the Case File ; @param case_number Unique Number assigned to case
-    function createcase(string calldata name, uint case_number) public payable {
+    function createcase(string calldata name, uint case_number, bytes32 AESkey) public payable {
         require(
             publicDoesUserExists(msg.sender) == true,
             "User is not registered"
@@ -57,6 +57,7 @@ contract Case is AssignRole{
         newCase.IDhash = keccak256(abi.encodePacked(name));
         newCase.HI = msg.sender;
         newCase.investigators[msg.sender] = 1;
+        newCase.key=AESkey;
         newCase.stipulatedtime = 25;
         newCase.creationtime = block.timestamp;
         newCase.closetime = 0;
@@ -157,11 +158,12 @@ contract Case is AssignRole{
     function register_evi(
         uint case_num,
         address user
-    ) public payable {
+    ) public payable returns (bool){
         // bytes32 key = keccak256(abi.encodePacked(ev));
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(is_authorized(user, case_num) == true, "User not authorised to add evidence to case");
         emit CanRegisterEvidence("User", user, " can register evidence to case ", case_num);
+        return true;
     }
 
     /// @notice returns if an AES key already exists
@@ -177,13 +179,12 @@ contract Case is AssignRole{
     }
     ///@notice allow user to add evidence 
     /// @param case_num Unique case ID;  @param user address of requestor; ///@param CID from IPFS; ///@param AES key used for AONT 
-    function add_evidence(uint case_num,address user, string memory CID, bytes32 AESkey) public payable {
+    function add_evidence(uint case_num,address user, string memory CID) public payable {
         bytes32 KC = keccak256(abi.encodePacked(CID));
         SCase storage nC = active_cases[case_num];
         nC.UnassignedEvidences[KC] = 1;
         nC.evid += 1;
         nC.evCID[KC]=CID;
-        nC.key = AESkey;
         emit EvidenceRegistered("User", user,  "registered evidence", KC);
     }
 

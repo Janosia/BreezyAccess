@@ -9,7 +9,10 @@ contract Evidence is Case {
         uint case_number
     ) public payable {
         // check authorization
-        register_evi(case_number, evidence, msg.sender);
+        bool val = register_evi(case_number, msg.sender);
+        if(val == true){
+            add_evidence(case_number, msg.sender, evidence);
+        }
     }
     ///@notice allows an user to assign level to evidence
     function level_assignment(
