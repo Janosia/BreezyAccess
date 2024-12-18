@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import CaseAbi from './contracts/Case.json';
 import AssignRoleAbi from "./contracts/AssignRole.json";
-
+import AONT from './AONT';
 function App() {
   const [web3, setWeb3] = useState(null);
   const [accounts, setAccounts] = useState("");
   const[Rolecontract,setroleContract]=useState(null);
   const [Casecontract, setcaseContract] = useState(null);
+  const [aesKey, setAesKey] = useState(null);
   const [message, setMessage] = useState('');
- 
-
+  const aont = new AONT();
   useEffect(() => {
     const provider = new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");
     async function template() {
@@ -35,7 +35,11 @@ function App() {
     }
     provider && template();
   }, []);
-  
+  const generateAesKey = async () => {
+    const key = await aont.generateKey();
+    setAesKey(key);
+    console.log('Generated AES Key:', key);
+  };  
  
   
   const createCase = async () => {
@@ -44,6 +48,10 @@ function App() {
       const caseNumber=document.querySelector("#value2").value;
       const gasLimit = 500000;
       const publiDoes= await Rolecontract.methods.publicDoesUserExists(accounts);
+      if (!aesKey) {
+        setMessage('Please generate the AES key first.');
+        return;
+      }
       if(publiDoes){
         console.log("public does user exists working");
       }
@@ -55,7 +63,7 @@ function App() {
       if(!caseexists){
         console.log("case does not exists");
       }
-      const transaction=await Casecontract.methods.createcase(caseName, caseNumber).send({ from: accounts, gas: gasLimit, });
+      const transaction=await Casecontract.methods.createcase(caseName, caseNumber, aesKey.toString()).send({ from: accounts, gas: gasLimit, });
       setMessage('Case created successfully!');
       const transactionHash = transaction.transactionHash;
       console.log("Transaction Hash:", transactionHash);

@@ -4985,15 +4985,15 @@
         198
       ],
       "Register": [
-        1280
+        1378
       ]
     },
-    "id": 1281,
+    "id": 1379,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1264,
+        "id": 1362,
         "literals": [
           "solidity",
           "^",
@@ -5006,10 +5006,10 @@
       {
         "absolutePath": "project:/contracts/AssignRole.sol",
         "file": "./AssignRole.sol",
-        "id": 1265,
+        "id": 1363,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 1281,
+        "scope": 1379,
         "sourceUnit": 199,
         "src": "60:26:5",
         "symbolAliases": [],
@@ -5020,13 +5020,13 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 1266,
+              "id": 1364,
               "name": "AssignRole",
               "nodeType": "IdentifierPath",
               "referencedDeclaration": 198,
               "src": "111:10:5"
             },
-            "id": 1267,
+            "id": 1365,
             "nodeType": "InheritanceSpecifier",
             "src": "111:10:5"
           }
@@ -5035,9 +5035,9 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 1280,
+        "id": 1378,
         "linearizedBaseContracts": [
-          1280,
+          1378,
           198
         ],
         "name": "Register",
@@ -5046,7 +5046,7 @@
         "nodes": [
           {
             "body": {
-              "id": 1278,
+              "id": 1376,
               "nodeType": "Block",
               "src": "193:59:5",
               "statements": [
@@ -5054,11 +5054,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 1273,
+                        "id": 1371,
                         "name": "designation",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 1269,
+                        "referencedDeclaration": 1367,
                         "src": "220:11:5",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_calldata_ptr",
@@ -5067,7 +5067,7 @@
                       },
                       {
                         "expression": {
-                          "id": 1274,
+                          "id": 1372,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -5078,7 +5078,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 1275,
+                        "id": 1373,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -5103,7 +5103,7 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 1272,
+                      "id": 1370,
                       "name": "publicsetRole",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
@@ -5114,7 +5114,7 @@
                         "typeString": "function (string calldata,address)"
                       }
                     },
-                    "id": 1276,
+                    "id": 1374,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -5129,14 +5129,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 1277,
+                  "id": 1375,
                   "nodeType": "ExpressionStatement",
                   "src": "206:38:5"
                 }
               ]
             },
             "functionSelector": "d014fe40",
-            "id": 1279,
+            "id": 1377,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -5144,17 +5144,17 @@
             "nameLocation": "143:13:5",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1270,
+              "id": 1368,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1269,
+                  "id": 1367,
                   "mutability": "mutable",
                   "name": "designation",
                   "nameLocation": "173:11:5",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1279,
+                  "scope": 1377,
                   "src": "157:27:5",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -5163,7 +5163,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 1268,
+                    "id": 1366,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "157:6:5",
@@ -5178,19 +5178,19 @@
               "src": "156:29:5"
             },
             "returnParameters": {
-              "id": 1271,
+              "id": 1369,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "193:0:5"
             },
-            "scope": 1280,
+            "scope": 1378,
             "src": "134:118:5",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 1281,
+        "scope": 1379,
         "src": "90:199:5",
         "usedErrors": []
       }
@@ -5205,12 +5205,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xBADdD0D37711BEfBa7110B2da4917Bf103040605",
-      "transactionHash": "0x4ad9340d7f96533bbfd8f8d197a19845fdac679c7c0c6df4ec53523682c04c48"
+      "address": "0x6Cb18178A26f1DCF2E6a577f269Ab52D6E5bFe23",
+      "transactionHash": "0xeff343724b4263964cd592230435cf4a93027550ba3728059375d48426768956"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-11-20T16:35:16.516Z",
+  "updatedAt": "2024-12-18T10:49:27.816Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
