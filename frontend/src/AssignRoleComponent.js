@@ -40,9 +40,6 @@ function AssignRoleComponent() {
         console.log(val);
         const isRegistered = await contract.methods.RegisteredUsers(val).call();
         console.log("Registered status for sender:", isRegistered);
-        // const role = await contract.methods.Roles(val).call();
-        // console.log("Registered status for sender:", role);
-        // Check gas limit before sending the transaction
         const transaction=await contract.methods.setRole(designation, userAddress).send({
           from: userAddress,
           gas: gasLimit,

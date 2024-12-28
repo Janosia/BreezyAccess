@@ -47,22 +47,22 @@ function App() {
       const caseName=document.querySelector("#value1").value;
       const caseNumber=document.querySelector("#value2").value;
       const gasLimit = 500000;
-      const publiDoes= await Rolecontract.methods.publicDoesUserExists(accounts);
-      if (!aesKey) {
-        setMessage('Please generate the AES key first.');
-        return;
-      }
-      if(publiDoes){
-        console.log("public does user exists working");
-      }
-      const publicreturnr=await Rolecontract.methods.publicreturnRole(accounts);
-      if(publicreturnr===1){
-        console.log("return role working");
-      }
-      const caseexists= await Casecontract.methods.does_case_exists(caseNumber);
-      if(!caseexists){
-        console.log("case does not exists");
-      }
+      // const publiDoes= await Rolecontract.methods.publicDoesUserExists(accounts);
+      // if (!aesKey) {
+      //   setMessage('Please generate the AES key first.');
+      //   return;
+      // }
+      // if(publiDoes){
+      //   console.log("public does user exists working");
+      // }
+      // const publicreturnr=await Rolecontract.methods.publicreturnRole(accounts);
+      // if(publicreturnr===1){
+      //   console.log("return role working");
+      // }
+      // const caseexists= await Casecontract.methods.does_case_exists(caseNumber);
+      // if(!caseexists){
+      //   console.log("case does not exists");
+      // }
       const transaction=await Casecontract.methods.createcase(caseName, caseNumber, aesKey.toString()).send({ from: accounts, gas: gasLimit, });
       setMessage('Case created successfully!');
       const transactionHash = transaction.transactionHash;

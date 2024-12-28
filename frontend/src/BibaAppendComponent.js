@@ -109,18 +109,18 @@ class AONT {
   }
 }
 
-async function main() {
-  const aont = new AONT();
-  const ogDATA = "HI I AM JANOSIA";
-  console.log("Original Data:", ogDATA);
+// async function main() {
+//   const aont = new AONT();
+//   const ogDATA = "HI I AM JANOSIA";
+//   console.log("Original Data:", ogDATA);
 
-  const { encryptedDt, difference, nonce } = await aont.encode_aont(ogDATA);
+//   const { encryptedDt, difference, nonce } = await aont.encode_aont(ogDATA);
 
-  const decrDt = await aont.decode(encryptedDt, difference, nonce);
-  console.log("Decrypted Data:", new TextDecoder().decode(decrDt));
-}
+//   const decrDt = await aont.decode(encryptedDt, difference, nonce);
+//   console.log("Decrypted Data:", new TextDecoder().decode(decrDt));
+// }
 
-main().catch(console.error);
+// main().catch(console.error);
 
 const BibaAppendComponent = () => {
   const [web3, setWeb3] = useState(null);
