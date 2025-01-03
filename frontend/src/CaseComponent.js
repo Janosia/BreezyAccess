@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import CaseAbi from './contracts/Case.json';
-import AssignRoleAbi from "./contracts/AssignRole.json";
+import CaseAbi from './contracts/BibaAppend.json';
+// import AssignRoleAbi from "./contracts/AssignRole.json";
 import AONT from './AONT';
 function App() {
   const [web3, setWeb3] = useState(null);
@@ -20,12 +20,12 @@ function App() {
 
       const contractRegister = new web3.eth.Contract(CaseAbi.abi, deployedNetwork.address);
       
-      const deployedNetworkRole = AssignRoleAbi.networks[networkId];
-      const contractRole = new web3.eth.Contract(
-        AssignRoleAbi.abi,
-        deployedNetworkRole.address
-      );
-      setroleContract(contractRole);
+      // const deployedNetworkRole = AssignRoleAbi.networks[networkId];
+      // const contractRole = new web3.eth.Contract(
+        // AssignRoleAbi.abi,
+        // deployedNetworkRole.address
+      // );
+      // setroleContract(contractRole);
       await provider.request({ method: "eth_requestAccounts" });
           // Accounts now exposed
           const accs = await web3.eth.getAccounts();
@@ -35,6 +35,7 @@ function App() {
     }
     provider && template();
   }, []);
+  
   const generateAesKey = async () => {
     const key = await aont.generateKey();
     setAesKey(key);
@@ -44,26 +45,13 @@ function App() {
   
   const createCase = async () => {
     try {
-      const caseName=document.querySelector("#value1").value;
+      const AESKEY=document.querySelector("#value1").value;
+      console.log(AESKEY);
       const caseNumber=document.querySelector("#value2").value;
       const gasLimit = 500000;
-      // const publiDoes= await Rolecontract.methods.publicDoesUserExists(accounts);
-      // if (!aesKey) {
-      //   setMessage('Please generate the AES key first.');
-      //   return;
-      // }
-      // if(publiDoes){
-      //   console.log("public does user exists working");
-      // }
-      // const publicreturnr=await Rolecontract.methods.publicreturnRole(accounts);
-      // if(publicreturnr===1){
-      //   console.log("return role working");
-      // }
-      // const caseexists= await Casecontract.methods.does_case_exists(caseNumber);
-      // if(!caseexists){
-      //   console.log("case does not exists");
-      // }
-      const transaction=await Casecontract.methods.createcase(caseName, caseNumber, aesKey.toString()).send({ from: accounts, gas: gasLimit, });
+      const key = web3.utils.asciiToHex(AESKEY, 32).slice(0,66);
+      console.log(key);
+      const transaction=await Casecontract.methods.create_case(caseNumber, key).send({ from: accounts, gas: gasLimit, });
       setMessage('Case created successfully!');
       const transactionHash = transaction.transactionHash;
       console.log("Transaction Hash:", transactionHash);
@@ -113,10 +101,10 @@ function App() {
 
 
   return (
-    <div>
-    <h1>Case Management System</h1>
+    <div className="BibaAppend">
+    <h1 className="Append-Heading" >Case Management System</h1>
       <div>
-        <label>Case Name:</label>
+        <label  className="Text-BibaAppend">AES KEY:</label>
         <input
           type="text"
           placeholder="Enter case name"
@@ -125,7 +113,7 @@ function App() {
       </div>
 
       <div>
-        <label>Case Number:</label>
+        <label  className="Text-BibaAppend">Case Number:</label>
         <input
           type="number"
           placeholder="Enter case number"
@@ -133,10 +121,10 @@ function App() {
         />
       </div>
 
-      <button onClick={createCase}>Create Case</button>
+      <button  className="Final-Append-Button"onClick={createCase}>Create Case</button>
 
       <div>
-        <label>Investigator Address:</label>
+        <label  className="Text-BibaAppend">Investigator Address:</label>
         <input
           type="text"
           placeholder="Enter investigator address"
@@ -144,11 +132,11 @@ function App() {
         />
       </div>
 
-      <button onClick={addInvestigator}>Add Investigator</button>
+      <button className="Final-Append-Button"onClick={addInvestigator}>Add Investigator</button>
 
 
       <div>
-        <button onClick={caseDetails}>view details</button>
+        <button className="Final-Append-Button" onClick={caseDetails}>view details</button>
         <p>{message}</p>
       </div>
     </div>

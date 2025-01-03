@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import EvidenceAbi from './contracts/Evidence.json';
-import AssignRoleAbi from './contracts/AssignRole.json';
-import CaseABI from './contracts/Case.json';
+import EvidenceAbi from './contracts/BibaAppend.json';
 import AONT from './AONT';
 import axios from "axios";
 const readFileAsArrayBuffer = (file) => {
@@ -17,16 +15,19 @@ const readFileAsArrayBuffer = (file) => {
 function EvidenceComponent() {
   const [web3, setWeb3] = useState(null);
   const [evidenceContract, setEvidenceContract] = useState(null);
-  const[CaseContract,setCaseContract] =useState(null);
+  // const[CaseContract,setCaseContract] =useState(null);
   const [file, setFile] = useState(null);
   const [evidenceHash, setEvidenceHash] = useState('');
+  const [evidenceLevel, setEvidenceLevel] = useState('');
   const [caseNumber, setCaseNumber] = useState('');
   const [message, setMessage] = useState('');
-  const[Rolecontract,setRolecontract]=useState(null);
+  // const[Rolecontract,setRolecontract]=useState(null);
   const[userAddress,setUserAddress]=useState("");
   const aont = new AONT();
-  const PINATA_API_KEY = "21ee47ad54d9db80a922";
-  const PINATA_API_SECRET = "dfca70cec69ba419903c1179778db959feafb1ebd75b115563d9b87e01bf5299";
+  // "21ee47ad54d9db80a922";
+  // "dfca70cec69ba419903c1179778db959feafb1ebd75b115563d9b87e01bf5299"
+  const PINATA_API_KEY = "4a7861d0478a1ee8ba5f";
+  const PINATA_API_SECRET = "5ec920966e991b3ea5c495f7a14426432a79f09d5f68a74caa36bbdfcae15fcd";
 
   useEffect(() => {
     const provider = new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");
@@ -36,25 +37,22 @@ function EvidenceComponent() {
       const deployedEvidenceNetwork = EvidenceAbi.networks[networkId];
 
       const contractEvidence = new web3.eth.Contract(EvidenceAbi.abi, deployedEvidenceNetwork.address);
-      const deployedRoleNetwork=AssignRoleAbi.networks[networkId];
-      const contractrole= new web3.eth.Contract(
-        AssignRoleAbi.abi,
-        deployedRoleNetwork.address,
-      );
-      const deployedCaseNetwork= CaseABI.networks[networkId];
-      const contractCase= new web3.eth.Contract(CaseABI.abi, deployedCaseNetwork.address);
-      setCaseContract(contractCase);
-      setRolecontract(contractrole);
+      
       setWeb3(web3);
       setEvidenceContract(contractEvidence);
 
       await provider.request({ method: "eth_requestAccounts" });
-          // Accounts now exposed
-          const accounts = await web3.eth.getAccounts();
-          setUserAddress(accounts[0]);
-    }
+        const accounts = await web3.eth.getAccounts();
+        setUserAddress(accounts[0]);}
     provider && template();
   }, []);
+
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    setFile(selectedFile);
+    console.log("File selected:", selectedFile);
+  };
+  
   const uploadFile = async () => {
     try {
       if (!file) {
@@ -63,10 +61,23 @@ function EvidenceComponent() {
         );
         return;
       }
-  
+      const caseNum = parseInt(caseNumber, 10); 
+      // const caseNum =document.querySelector(caseNumber).value;
+      const gasLimit = 200000;
+      const val =await evidenceContract.methods.register_evi(caseNum).send({
+        from: userAddress,
+        gas: gasLimit,
+      });    
+
+      if(!val){
+        setMessage(
+          "Error: You are not authorised to register evidence."
+        );
+        return;
+      }
+      
       // Read the file as an ArrayBuffer for encryption
       const fileContent = await readFileAsArrayBuffer(file);
-  
       // Encrypt the file using AONT
       const { encryptedDt, difference, nonce } = await aont.encode_aont(fileContent);
   
@@ -93,7 +104,20 @@ function EvidenceComponent() {
   
       if (response.status === 200) {
         const cid = response.data.IpfsHash; // CID from Pinata
+        // const KC = web3.utils.keccak256(cid);
+        // console.log(KC);
         setEvidenceHash(cid); // Set the CID as evidence hash
+        const val2 =await evidenceContract.methods.add_evidence(caseNum, userAddress,cid).send({
+          from: userAddress,
+          gas: gasLimit,
+        });
+        const events = val2.events;
+        console.log(events);
+        if (events) {
+          const kc = events.returnValues.kc; // KC from the event
+          console.log("KC value:", kc);
+        }
+        console.log(val2); 
         setMessage("File uploaded and encrypted successfully!");
       } else {
         throw new Error("Failed to upload file to Pinata.");
@@ -104,82 +128,14 @@ function EvidenceComponent() {
     }
   };
 
-  /*const onFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    setFile(selectedFile);
-  };
-
-  const readFileContent = async (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsText(file); // Read file content as text
-    });
-  };
-
-  const hashDocument = async () => {
-    try {
-      if (!web3 || !file) {
-        setMessage('Error: Please wait for the blockchain to initialize and select a document.');
-        return;
-      }
-
-      // Read the content of the file and hash it
-      const fileContent = await readFileContent(file);
-      const documentHash = web3.utils.sha3(fileContent); // Directly hash text content
-
-      // Update state with the hashed document
-      setEvidenceHash(documentHash);
-      setMessage('Document hashed successfully!');
-    } catch (error) {
-      console.error('Error hashing document:', error);
-      setMessage('Error hashing document. Please check the console for details.');
-    }
-  };
-   */
-
-  const registerEvidence = async () => {
-    try {
-      if (!evidenceHash) {
-        setMessage('Error: Please hash the document first.');
-        return;
-      }
-  
-      // Ensure evidenceHash is in the correct format
-      //const cleanedEvidenceHash = evidenceHash.startsWith('0x') ? evidenceHash.slice(2) : evidenceHash;
-  
-      // Convert the evidence hash to bytes32
-      //const evidenceHashBytes32 = '0x' + cleanedEvidenceHash;
-  
-      // Call the _register_evidence function from the contract
-      const transaction=await evidenceContract.methods.level_assignment(evidenceHash,caseNumber).send({
-        from: userAddress, // Use accounts[0] as the sender
-        gas: 200000, // Adjust gas limit based on your contract
-      });
-      const transactionHash = transaction.transactionHash;
-      console.log("Transaction Hash:", transactionHash);
-      console.log("Timestamp:", new Date().toLocaleString());
-  
-      setMessage('Evidence registered successfully!');
-    } catch (error) {
-      console.error('Error registering evidence:', error);
-      setMessage('Error registering evidence. Please check the console for details.');
-    }
-  };
-  
-
   const assignLevel = async () => {
     try {
-      // Call the level_assignment function from the contract
-      //const cleanedEvidenceHash = evidenceHash.startsWith('0x') ? evidenceHash.slice(2) : evidenceHash;
-  
-      // Convert the evidence hash to bytes32
-      //const evidenceHashBytes32 = '0x' + cleanedEvidenceHash;
-  
-      const transaction=await evidenceContract.methods._register_evidence(evidenceHash,caseNumber).send({
+      console.log(evidenceHash);
+      const evidenceLvl = parseInt(evidenceLevel,10);
+      const caseNum = parseInt(caseNumber, 10);
+      const transaction=await evidenceContract.methods.assign_inl(caseNum,evidenceHash,evidenceLvl).send({
         from: userAddress,
-        gas: 200000, // Adjust gas limit based on your contract
+        gas: 200000, 
       });
       const transactionHash = transaction.transactionHash;
       console.log("Transaction Hash:", transactionHash);
@@ -198,21 +154,29 @@ function EvidenceComponent() {
 
       <div>
         <label>Select Document:</label>
-        <input type="file"  />
+        <input type="file" onChange={handleFileChange} />
       </div>
-
-      <button onClick={uploadFile}>upload Document</button>
-
       <div>
-        <label>CID:</label>
+        <label> Evidence Hash :</label>
         <input
           type="text"
           placeholder="Evidence Hash"
           value={evidenceHash}
+          // onChange={(e) => setEvidenceHash(e.target.value)} // Allow input change
           readOnly
         />
       </div>
-
+      
+      <div>
+        <label>Integrity Level</label>
+        <input
+          type="number"
+          placeholder="Level"
+          value={evidenceLevel}
+          onChange={(e) => setEvidenceLevel(e.target.value)} // Allow input change
+        />
+      </div>
+      
       <div>
         <label>Case Number:</label>
         <input
@@ -223,7 +187,7 @@ function EvidenceComponent() {
         />
       </div>
 
-      <button onClick={registerEvidence}>Register Evidence</button>
+      <button onClick={uploadFile}>Register Evidence</button>
       <button onClick={assignLevel}>Assign Level</button>
 
       <div>

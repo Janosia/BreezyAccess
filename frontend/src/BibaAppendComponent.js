@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./BibaAppend.css";
 import Web3 from "web3";
 
-import AssignRoleABI from "./contracts/AssignRole.json";
+// import AssignRoleABI from "./contracts/AssignRole.json";
 import BibaAppendABI from "./contracts/BibaAppend.json";
-import CaseABI from "./contracts/Case.json";
+// import CaseABI from "./contracts/Case.json";
 import axios from "axios";
 const readFileAsArrayBuffer = (file) => {
   return new Promise((resolve, reject) => {
@@ -21,9 +21,9 @@ class AONT {
       this.KEY_SIZE = 32;
   }
 
-  async generateKey() {
-      return crypto.getRandomValues(new Uint8Array(this.KEY_SIZE));
-  }
+  // async generateKey() {
+  //     return crypto.getRandomValues(new Uint8Array(this.KEY_SIZE));
+  // }
 
   async encrypt(data, key, nonce) {
       const encoder = new TextEncoder();
@@ -72,9 +72,9 @@ class AONT {
       return result;
   }
 
-  async encode_aont(data) {
+  async encode_aont(data , key) {
       const nonce = crypto.getRandomValues(new Uint8Array(12));
-      const key = await this.generateKey();
+      // const key = await this.generateKey();
 
       const encryptedDt = await this.encrypt(data, key, nonce);
       const hashedData = await this.hash(encryptedDt);
@@ -83,10 +83,10 @@ class AONT {
       return { encryptedDt, difference, nonce };
   }
 
-  async decode(encryptedDt, difference, nonce) {
+  async decode(encryptedDt, difference, nonce, key) {
       const hashedDt = await this.hash(encryptedDt);
-      const key = this.XOR_Buffer(difference, hashedDt);
-
+      // const key = this.XOR_Buffer(difference, hashedDt);
+      const derivedKey = this.XOR_Buffer(difference, hashedDt);
       return this.decrypt(encryptedDt, key, nonce);
   }
 
@@ -109,67 +109,33 @@ class AONT {
   }
 }
 
-// async function main() {
-//   const aont = new AONT();
-//   const ogDATA = "HI I AM JANOSIA";
-//   console.log("Original Data:", ogDATA);
-
-//   const { encryptedDt, difference, nonce } = await aont.encode_aont(ogDATA);
-
-//   const decrDt = await aont.decode(encryptedDt, difference, nonce);
-//   console.log("Decrypted Data:", new TextDecoder().decode(decrDt));
-// }
-
-// main().catch(console.error);
-
 const BibaAppendComponent = () => {
   const [web3, setWeb3] = useState(null);
   const [file, setFile] = useState(null);
   const [bibaAppendContract, setBibaAppendContract] = useState(null);
-  const [assignRoleContract, setAssignRoleContract] = useState(null);
-  
   const [outputMessage, setOutputMessage] = useState("");
   const [evidenceHash, setEvidenceHash] = useState('');
-  const [CaseContract, setCaseContract]=useState(null);
   const [userAddress, setUserAddress] = useState("");
   const aont = new AONT();
-  const PINATA_API_KEY = "21ee47ad54d9db80a922";
-  const PINATA_API_SECRET = "dfca70cec69ba419903c1179778db959feafb1ebd75b115563d9b87e01bf5299";
-
+  // const PINATA_API_KEY = "21ee47ad54d9db80a922";
+  // const PINATA_API_SECRET = "dfca70cec69ba419903c1179778db959feafb1ebd75b115563d9b87e01bf5299";
+  const PINATA_API_KEY = "4a7861d0478a1ee8ba5f";
+  const PINATA_API_SECRET = "5ec920966e991b3ea5c495f7a14426432a79f09d5f68a74caa36bbdfcae15fcd";
   useEffect(()=>{
     const provider=new Web3.providers.HttpProvider("HTTP://127.0.0.1:7545");
     async function template(){
       const web3=new Web3(provider);
-      //we need abi and contract address
       const networkId= await web3.eth.net.getId();
-      
-      //console.log(deployedNetwork.address);
-      
       setWeb3(web3);
-     
-
-      const deployedNetworkrole=AssignRoleABI.networks[networkId];
-      const contractrole=new web3.eth.Contract(AssignRoleABI.abi, deployedNetworkrole.address);
-      //console.log(deployedNetworkrole.address);
-      setAssignRoleContract(contractrole);
-
       const deployednetworkbiba=BibaAppendABI.networks[networkId];
       const contractbiba=new web3.eth.Contract(BibaAppendABI.abi,deployednetworkbiba.address);
       setBibaAppendContract(contractbiba);
-      const deployedcase=CaseABI.networks[networkId];
-      const contractcase=new web3.eth.Contract(
-        CaseABI.abi,
-        deployedcase.address,
-      );
       await provider.request({ method: "eth_requestAccounts" });
-          // Accounts now exposed
           const accounts = await web3.eth.getAccounts();
           setUserAddress(accounts[0]);
-      setCaseContract(contractcase);
     }
     provider && template();
   },[]);
-
   const onFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFile(selectedFile);
@@ -204,40 +170,34 @@ const BibaAppendComponent = () => {
   };*/
   
 
-      const handleAppend = async () => {
+    const handleAppend = async () => {
         try {
-          if (!evidenceHash) {
-            setOutputMessage("Error: Please hash the document first.");
-            return;
-          }
-          // Ensure evidenceHash is in the correct format
-      /*const cleanedEvidenceHash = evidenceHash.startsWith('0x') ? evidenceHash.slice(2) : evidenceHash;
-      const evidenceHashBytes32 = '0x' + cleanedEvidenceHash;*/
-      // Convert the evidence hash to bytes32
+          console.log(bibaAppendContract.methods);
           const key = document.querySelector("#value").value;
           const caseNumber = document.querySelector("#value3").value;
-      
-          // Check authorization and levels
-          const DAC_check = await CaseContract.methods.is_authorized(userAddress, caseNumber).call();
-          if (!DAC_check) {
-            setOutputMessage("User is not authorized to access case.");
+          const response = await bibaAppendContract.methods
+            .append_allowed(key,caseNumber)
+            .call({ from: userAddress});
+          if(!response){
+            setOutputMessage(
+              "Error: You are not authorised to register evidence."
+            );
             return;
           }
-      
-          const L = await CaseContract.methods.return_level(caseNumber, key).send({ from: userAddress });
-          const R = await assignRoleContract.methods.returnRole(userAddress).call();
-          console.log("User level:", R);
-          console.log("Object level:", L);
-      
-          // Append to contract
-          const response = await bibaAppendContract.methods
-            .append_allowed(key, userAddress, evidenceHash, caseNumber)
-            .send({ from: userAddress, gas: 200000 });
-      
           const fileContent = await readFileAsArrayBuffer(file);
-      
+          const AESkey = await bibaAppendContract.methods
+          .returnAESkey(caseNumber)
+          .call({ from: userAddress});
           // Encrypt the file using AONT
-          const { encryptedDt, difference, nonce } = await aont.encode_aont(fileContent);
+          const hex = AESkey.startsWith('0x') ? AESkey.slice(2) : AESkey;
+          if (hex.length % 2 !== 0) {
+              throw new Error("Hex string has an odd length");
+          }
+          const array = new Uint8Array(hex.length / 2);
+          for (let i = 0; i < hex.length; i += 2) {
+              array[i / 2] = parseInt(hex.substr(i, 2), 16);
+          }
+          const { encryptedDt, difference, nonce } = await aont.encode_aont(fileContent, array);
       
           // Prepare data for Pinata
           const formData = new FormData();
@@ -263,46 +223,46 @@ const BibaAppendComponent = () => {
           if (responsd.status === 200) {
             const cid = responsd.data.IpfsHash; // CID from Pinata
             setEvidenceHash(cid); // Set the CID as evidence hash
+            const val2 =await bibaAppendContract.methods.add_evidence(caseNumber, userAddress,cid).send({
+              from: userAddress,
+              gas: 200000,
+            });
+            const val = await bibaAppendContract.methods.tracker(caseNumber,cid, key).send({ from: userAddress, gas: 200000 });
+            const transactionHash = val.transactionHash;
+            console.log("Transaction Hash:", transactionHash);
+            console.log("Timestamp:", new Date().toLocaleString());
             setOutputMessage("File uploaded and encrypted successfully!");
           } else {
             throw new Error("Failed to upload file to Pinata.");
           }
-      
+          
           setOutputMessage(`Append successful.`);
-          const transactionHash = response.transactionHash;
-          console.log("Transaction Hash:", transactionHash);
-          console.log("Timestamp:", new Date().toLocaleString());
+          
         } catch (error) {
           console.error("Error appending evidence:", error);
           setOutputMessage("Error appending evidence. Please check the input.");
         }
       };
-      
-    
-  
-
   return (
     <div className="BibaAppend">
       <div className="Append-Heading">Append Evidence</div>
       <div className = "AppendContent">
-        <label className="originalevi">Original Evidence Key</label>
+        <div className="Case-Number">
+          <label className="Text-BibaAppend">Case Number</label>
+          <input
+            type="number"
+            id="value3"></input>
+        
+        </div>
+        <label className="originalevi">Original Evidence CID</label>
         <input
           type="text"
           id="value"></input>
-      
       </div>
       <div className="evidence">
-        <label  className="Text-BibaAppend"> Select Document </label>
-       
+        <label className="Text-BibaAppend"> Select Document </label>
+        <input type="file" onChange={onFileChange} />
       </div>
-      <div className="Case-Number">
-        <label className="Text-BibaAppend">Case Number</label>
-        <input
-          type="text"
-          id="value3"></input>
-      
-      </div>
-
       <div className="ValueAppend">
         <label className="Text-BibaAppend"> To Append </label>
         <input
@@ -312,7 +272,6 @@ const BibaAppendComponent = () => {
           readOnly
         />
       </div>
-      
       <button className="Final-Append-Button" onClick={handleAppend}>Append Evidence</button>
       <div>
         <p>{outputMessage}</p>
