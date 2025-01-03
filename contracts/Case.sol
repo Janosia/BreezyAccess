@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 import "./AssignRole.sol";
-///@title this contract checks whether requestor is head investigator or not
-///and then allows creation of case
+///@title allows creation of case & manages all evidence related to a case
+/// DAC policy 
 contract Case is AssignRole{
     struct SCase {
         string ID;
-        mapping(bytes32 => uint) AssignedEvidences;
-        mapping(bytes32 => uint) UnassignedEvidences;
+        mapping(string => uint) AssignedEvidences;
+        mapping(string => uint) UnassignedEvidences;
         mapping(address => uint) investigators;
-        mapping(bytes32 => string) evCID;
         bytes32 key;
         address HI;
         uint evid;
@@ -18,32 +17,19 @@ contract Case is AssignRole{
     mapping(uint=>address)Case_Head_Inv;
     mapping(uint => SCase) active_cases;
     event Case_Registration_Done(string, uint, string, address );
-    event InvestigatorRemoved(string, address,string, uint);
-    event EvidenceAssignedLevel(string, bytes32);
-    event EvidenceRegistered(string, address, string, bytes32);
+    event Investigator_Removed(string, address,string, uint);
+    event Investigator_Added(string, address, string, uint);
+    event Evidence_Assigned_Level(string, bytes32, string, uint);
+    event Evidence_Registered(string, address, string, bytes32);
     event Can_Register_Evidence(string, address, string,uint);
     ///@notice checks if case has already been created
     function does_case_exists(uint num) public view returns (bool) {
-        if(Cases[num]==1){
-            return true;
-        }
-        return false;
-    }
+        return Cases[num]==1;}
     /// @notice creates a case
-    ///@param case_number Unique Number assigned to case
     function create_case( uint case_number, bytes32 AESkey) public payable {
-        require(
-            RegisteredUsers[msg.sender] == 1,
-            "User is not registered"
-        );
-        require(
-            does_case_exists(case_number) == false,
-            "Case is already created"
-        );
-        require(
-            returnRole(msg.sender) == 1,
-            "Only Head Investigator can create cases"
-        );
+        require(RegisteredUsers[msg.sender] == 1,"User is not registered");
+        require(does_case_exists(case_number) == false,"Case is already created");
+        require(returnRole(msg.sender) == 1,"Only Head Investigator can create cases");
         SCase storage newCase = active_cases[case_number];
         newCase.HI = msg.sender;
         newCase.investigators[msg.sender] = 1;
@@ -64,7 +50,6 @@ contract Case is AssignRole{
         address user,
         uint number
     ) public view returns (bool) {
-        // DAC
         SCase storage nC = active_cases[number];
         if (nC.investigators[user] == 1) {
             return true;
@@ -72,24 +57,26 @@ contract Case is AssignRole{
         return false;
     }
 
-    /// @notice this introduces DAC, allows Head Investigator to modify access rights
+    /// @notice allows Head Investigator to modify access rights
     function add_investigator(address inv, uint num) public payable {
         SCase storage newC = active_cases[num];
         newC.investigators[inv] = 1;
+        emit Investigator_Added(
+            "Investigator" ,
+            inv,
+            " added to case ",
+            num
+        );
     }
 
     /// @notice checks whether evidence exists
     /// @param case_number unique id of case, @param key hash of evidence which has to be assigned level 
     function does_evidence_exists(
         uint case_number,
-        bytes32 key
+        string memory key
     ) public view returns (bool) {
-        require(does_case_exists(case_number) == true, "Case does not exists");
         SCase storage c = active_cases[case_number];
-        if (c.AssignedEvidences[key] > 0) {
-            return true;
-        }
-        if (c.UnassignedEvidences[key] > 0) {
+        if (c.AssignedEvidences[key] > 0 || c.UnassignedEvidences[key] > 0) {
             return true;
         }
         return false;
@@ -98,7 +85,7 @@ contract Case is AssignRole{
     /// @notice checks whether level is assigned to evidence
     function is_level_assigned(
         uint case_number,
-        bytes32 key
+        string memory key
     ) public view returns (bool) {
         SCase storage c = active_cases[case_number];
         if (c.UnassignedEvidences[key] == 1) {
@@ -112,7 +99,7 @@ contract Case is AssignRole{
         // remove an investigator from DAC policy
         SCase storage nC = active_cases[case_number];
         nC.investigators[inv] = 0;
-        emit InvestigatorRemoved(
+        emit Investigator_Removed(
             "Investigator has been removed" ,
             inv,
             "from case",
@@ -121,37 +108,35 @@ contract Case is AssignRole{
     }
 
     /// @notice allows Head Investigator to assign integrity level to an evidence
-    function setlevel(bytes32 key, uint case_num, uint level) internal {
+    function setlevel(string memory key, uint case_num, uint level) internal {
         SCase storage nc = active_cases[case_num];
         nc.AssignedEvidences[key] = level; // addition to Assigned evidences
         nc.UnassignedEvidences[key] = 0; // removal from Unassigned evidences
-        emit EvidenceAssignedLevel("Evidence as been assigned a level", key);
+        bytes32 KC = keccak256(abi.encodePacked(key));
+        emit Evidence_Assigned_Level("Evidence",  KC,  "has been assigned level", level);
     }
 
     ///@notice caller function to assign level to an evidence 
-    function assign_inl(uint case_num, string calldata ev, uint level) public payable {
-        // assign level
-        bytes32 key = keccak256(abi.encodePacked(ev));
+    function assign_inl(uint case_num, string memory key, uint level) public payable {
         require(returnHI(case_num)==msg.sender, "Only Head Investigator can assign level to evidence");
         require(does_case_exists(case_num) == true, "Case does not exists");
         require(
-            does_evidence_exists(case_num, key) == false,
-            "Evidence exists"
+            does_evidence_exists(case_num, key) == true,
+            "Evidence does not exists"
         );
         require(is_level_assigned(case_num, key) == false, "Level assigned");
         setlevel(key, case_num, level);
     }
 
     ///@notice check if user is authorised to add evidence
-    /// @param case_num Unique case ID;  @param user address of requestor
+    /// @param case_num Unique case ID;  
     function register_evi(
-        uint case_num,
-        address user
+        uint case_num
     ) public payable returns (bool){
         // bytes32 key = keccak256(abi.encodePacked(ev));
         require(does_case_exists(case_num) == true, "Case does not exists");
-        require(is_authorized(user, case_num) == true, "User not authorised to add evidence to case");
-        emit Can_Register_Evidence("User", user, " can register evidence to case ", case_num);
+        require(is_authorized(msg.sender, case_num) == true, "User not authorised to add evidence to case");
+        emit Can_Register_Evidence("User", msg.sender, " can register evidence to case ", case_num);
         return true;
     }
 
@@ -168,30 +153,34 @@ contract Case is AssignRole{
     }
     ///@notice allow user to add evidence 
     /// @param case_num Unique case ID;  @param user address of requestor; ///@param CID from IPFS; ///@param AES key used for AONT 
-    function add_evidence(uint case_num,address user, string memory CID) public payable {
+    function add_evidence(uint case_num, address user, string memory CID) public returns (string memory) {
         bytes32 KC = keccak256(abi.encodePacked(CID));
         SCase storage nC = active_cases[case_num];
-        nC.UnassignedEvidences[KC] = 1;
+        nC.UnassignedEvidences[CID] = 1;
         nC.evid += 1;
-        nC.evCID[KC]=CID;
-        emit EvidenceRegistered("User", user,  "registered evidence", KC);
+        // nC.evCID[KC]=CID;
+        emit Evidence_Registered("User", user,  "registered evidence", KC);
+        return CID;
     }
 
     ///@notice return level of integrity assigned to an evidence
     ///@param key unique identifier of evidence
     function return_level(
         uint case_num,
-        bytes32 key
-    ) public payable returns (uint) {
-        require(does_case_exists(case_num) == true, "Case does not exists");
-        require(
-            does_evidence_exists(case_num, key) == true,
-            "Evidence does not exists"
-        );
-        require(is_level_assigned(case_num, key) == true, "Evidence not valid");
-        SCase storage nc = active_cases[case_num];
-        uint lvl = nc.AssignedEvidences[key];
-        return lvl;
+        string memory key
+    ) public view returns (uint) {
+        // require(does_case_exists(case_num) == true, "Case does not exists");
+        // require(
+        //     does_evidence_exists(case_num, key) == true,
+        //     "Evidence does not exists"
+        // );
+        // require(is_level_assigned(case_num, key) == true, "Evidence not valid");
+        if(does_case_exists(case_num) == true && does_evidence_exists(case_num, key) == true && is_level_assigned(case_num, key) == true){
+            SCase storage nc = active_cases[case_num];
+            uint lvl = nc.AssignedEvidences[key];
+            return lvl;
+        }
+        return 0;
     }
 
 //     ///@notice allows deletion of evidence
