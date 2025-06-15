@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 
-import AssignRoleABI from "./build/contracts/AssignRole.json";
-import BibaReadABI from "./build/contracts/BibaRead.json"
-import CaseABI from "./build/contracts/Case.json";
+// import AssignRoleABI from "./contracts/AssignRole.json";
+import BibaReadABI from "./contracts/BibaAppend.json"
+// import CaseABI from "./contracts/Case.json";
 
 
 
@@ -11,9 +11,9 @@ import CaseABI from "./build/contracts/Case.json";
 function BibaReadComponent() {
   const [web3, setWeb3] = useState(null);
   const [bibaReadContract, setBibaReadContract] = useState(null);
-  const [assignRoleContract, setAssignRoleContract] = useState(null);
+  // const [assignRoleContract, setAssignRoleContract] = useState(null);
   const [userAddress, setUserAddress] = useState("");
-  const [CaseContract,setCaseContract]=useState(null);
+  // const [CaseContract,setCaseContract]=useState(null);
   const [outputMessage, setOutputMessage] = useState("");
 
   useEffect(()=>{
@@ -29,20 +29,20 @@ function BibaReadComponent() {
           const accounts = await web3.eth.getAccounts();
           setUserAddress(accounts[0]);
 
-      const deployedNetworkrole=AssignRoleABI.networks[networkId];
-      const contractrole=new web3.eth.Contract(AssignRoleABI.abi, deployedNetworkrole.address);
+      // const deployedNetworkrole=AssignRoleABI.networks[networkId];
+      // const contractrole=new web3.eth.Contract(AssignRoleABI.abi, deployedNetworkrole.address);
 
 
       
-      setAssignRoleContract(contractrole);
+      // setAssignRoleContract(contractrole);
 
       const deployednetworkbiba=BibaReadABI.networks[networkId];
       const contractbiba=new web3.eth.Contract(BibaReadABI.abi,deployednetworkbiba.address);
       setBibaReadContract(contractbiba);
 
-      const deployedcase=CaseABI.networks[networkId];
-      const contractcase=new web3.eth.Contract(CaseABI.abi,deployedcase.address);
-      setCaseContract(contractcase);
+      // const deployedcase=CaseABI.networks[networkId];
+      // const contractcase=new web3.eth.Contract(CaseABI.abi,deployedcase.address);
+      // setCaseContract(contractcase);
     }
     provider && template();
   },[]);
@@ -50,28 +50,21 @@ function BibaReadComponent() {
 
   const handleRead = async () => {
     const key = document.querySelector("#value").value;
-    const check=await CaseContract.methods.does_evidence_exists(key).call();
+    // const check=await bibaReadContract.methods.does_evidence_exists(key).call();
     const caseNumber=document.querySelector('#value2').value;
       
-  if(check){
-      console.log('element does exist');
+  if(true){
+  //     console.log('element does exist');
     try {
-      
-      
-
-       // Assuming user's address is available
-      
-      const L = await CaseContract.methods.returnLevel(caseNumber,key).call();
-      const R = await assignRoleContract.methods.returnRole(userAddress).call();
-      console.log('user level:' , R);
-        console.log('object level:' ,L);
-      const val = R <= L;
+      // const L = await bibaReadContract.methods.returnLevel(caseNumber,key).call();
+      // const R = await bibaReadContract.methods.returnRole(userAddress).call();
+      // console.log('user level:' , R);
+      // console.log('object level:' ,L);
+      const val = await bibaReadContract.methods.read_allowed(key, caseNumber).send({ from: userAddress , gas: 200000,
+      });
       if (val) {
-        
-        const customEvent = new CustomEvent('ValIsTrue', { detail: {userAddress, L, R } });
-        document.dispatchEvent(customEvent);
-        /*await bibaReadContract.methods.read_allowed(key, userAddress).send({ from: userAddress , gas: 200000,
-        });*/
+        // const customEvent = new CustomEvent('ValIsTrue', { detail: {userAddress, L, R } });
+        // document.dispatchEvent(customEvent);
         setOutputMessage('Successfully read evidence.');
       } else {
         setOutputMessage('User is not authorized to read evidence.');
@@ -98,7 +91,7 @@ function BibaReadComponent() {
       <div>
         <label>Case Number</label>
         <input
-          type="text"
+          type="number"
           id="value2"></input>
       </div>
       <button onClick={handleRead}>Read Evidence</button>
