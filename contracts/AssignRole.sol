@@ -3,10 +3,12 @@ pragma solidity ^0.8.9;
 
 ///@title role assignment to user
 contract AssignRole {
+
     mapping(address => uint)  public Roles;  
     mapping(address => uint) public RegisteredUsers;
     address[] public users;
     event User_Registration_Done(string, address, uint);
+    
     ///@notice returns level of integrity based on role of user
     function getLevel(string calldata designation) internal pure returns (uint) {
         if(keccak256(abi.encodePacked(designation)) == keccak256(abi.encodePacked("Head Investigator"))) return 1;
@@ -32,6 +34,7 @@ contract AssignRole {
         require(DoesUserExists(user) == true, "User is not registered");
         return Roles[user];
     }
+
     function publicDoesUserExists(address user) public view returns (bool) {
         bool ans = DoesUserExists(user);
         return (ans);
