@@ -1,44 +1,39 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
- 
+pragma solidity ^0.8.9;
 
-contract AssignRole{
-    mapping(string => uint) private Levels;
-    mapping(address => uint) public Roles; // each address will have a IG level storing is like address : Integrity Level 1/2
-    address[] private RegisteredUsers;  // dynamic array of all registered users, to check whether they exists or not
-    
-    event RegistrationDone(string, address, uint);
-    
-    constructor(){
-        Levels["Head Investigator"] = 1;
-        Levels["Lead Investigator"] = 4;
-        Levels["Team Investigator"] = 7;
+///@title role assignment to user
+contract AssignRole {
+    mapping(address => uint)  public Roles;  
+    mapping(address => uint) public RegisteredUsers;
+    address[] public users;
+    event User_Registration_Done(string, address, uint);
+    ///@notice returns level of integrity based on role of user
+    function getLevel(string calldata designation) internal pure returns (uint) {
+        if(keccak256(abi.encodePacked(designation)) == keccak256(abi.encodePacked("Head Investigator"))) return 1;
+        else if (keccak256(abi.encodePacked(designation)) == keccak256(abi.encodePacked("Lead Investigator"))) return 4;
+        else if (keccak256(abi.encodePacked(designation)) == keccak256(abi.encodePacked("Team Investigator")))return 7;
+        return 0;}
+    ///@notice checks if user is already existing
+    function DoesUserExists(address user) public view returns (bool) {
+        return (RegisteredUsers[user] == 1);
+    }
+    ///@notice allows an user to create account and set role
+    function setRole(string calldata designation) public {
+        require(DoesUserExists(msg.sender) == false, "User Already Registered");
+        require(getLevel(designation) > 0, "Invalid designation");
+        Roles[msg.sender] = getLevel(designation);
+        RegisteredUsers[msg.sender] = 1;
+        users.push(msg.sender);
+        emit User_Registration_Done(" User Registration Completed",msg.sender,Roles[msg.sender]);
     }
 
-    function getLevel(string memory designation) public payable returns(uint){
-       return (Levels[designation]);
-    }
-
-    function DoesExists (address user) public view returns(bool){
-        for(uint i =0; i < RegisteredUsers.length; i++){
-            if(RegisteredUsers[i] == user){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function setRole(string memory designation, address user) public payable {
-        
-        require(DoesExists(user) == false, "User Already Registered" );
-        require(getLevel(designation)> 0, "Invalid designation");
-        Roles[user] = getLevel(designation);
-        RegisteredUsers.push(user);
-        emit RegistrationDone(" User Registration Completed",user, Roles[user]);
-        
-    }
-    function returnRole(address user) public view returns(uint){
-        require(DoesExists(user) == true , "User is not registered");
+    ///@notice returns role of an user 
+    function returnRole(address user) public view returns (uint) {
+        require(DoesUserExists(user) == true, "User is not registered");
         return Roles[user];
+    }
+    function publicDoesUserExists(address user) public view returns (bool) {
+        bool ans = DoesUserExists(user);
+        return (ans);
     }
 }

@@ -1,6 +1,3 @@
-
-const AssignRole = artifacts.require("./AssignRole");
-const AssignLevel = artifacts.require("./Case");
 const BibaRead = artifacts.require("./BibaRead");
 
 // T1 : simple read strictly less than
@@ -9,13 +6,9 @@ const BibaRead = artifacts.require("./BibaRead");
 
 contract("BibaRead", (accounts) => {
   
-  let assignRoleInstance;
-  let assignLevelInstance;
   let bibareadInstance;
   beforeEach(async () => {
-    assignRoleInstance = await AssignRole.new({ from: accounts[0] });
-    assignLevelInstance = await AssignLevel.new({ from: accounts[0] });
-    bibareadInstance = await BibaRead.new(assignLevelInstance.address, assignRoleInstance.address, {from : accounts[0]});
+    bibareadInstance = await BibaRead.new({ from: accounts[0] });
   });
 
   // Test 1 : Simple Read with strictly less tahn values
@@ -25,8 +18,8 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await assignLevelInstance.setLevel(qualification, key, {from: accounts[0]}); // register evidence
-    await assignRoleInstance.setRole(desig,user, {from: accounts[0]}); // register user
+    await bibareadInstance.setlevel(key, {from: accounts[0]}); // register evidence
+    
 
     const tx = await bibareadInstance.read_allowed(key, user);
 
@@ -40,8 +33,8 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await assignLevelInstance.setLevel(qualification, key, {from: accounts[0]}); // register evidence
-    await assignRoleInstance.setRole(desig,user, {from: accounts[0]}); // register user
+    await bibareadInstance.setelevel(key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.setRole(desig,user, {from: accounts[0]}); // register user
 
     const tx = await bibareadInstance.read_allowed(key, user);
 
@@ -55,8 +48,8 @@ contract("BibaRead", (accounts) => {
     const key = web3.utils.keccak256("Sample");
     const user = accounts[0];
     
-    await assignLevelInstance.setLevel(qualification, key, {from: accounts[0]}); // register evidence
-    await assignRoleInstance.setRole(desig,user, {from: accounts[0]}); // register user
+    await bibareadInstance.setlevel(key, {from: accounts[0]}); // register evidence
+    await bibareadInstance.setRole(desig,user, {from: accounts[0]}); // register user
 
     
     try{
