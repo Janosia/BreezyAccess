@@ -43,22 +43,6 @@ cd frontend
 npm start
 ```
 
-## 🧪 Load Testing
-
-To run load tests:
-
-1. **Enable module support** by adding the following to your `package.json`:
-   ```json
-   {
-     "type": "module"
-   }
-   ```
-
-2. **Run the load test**:
-   ```bash
-   node load_test.js
-   ```
-
 3. **Important:** Remove line `"type": "module"` from `package.json` after load testing to ensure dApp runs properly.
 
 ## 📁 Project Structure
@@ -90,19 +74,23 @@ Run the smart contract tests:
 ```bash
 truffle test
 ```
+### Load Testing
 
-## 📝 Usage
+To run load tests:
 
-1. Start your local blockchain (Ganache)
-2. Deploy contracts using Truffle
-3. Launch the frontend application
-4. Interact with the dApp through the web interface
+1. **Enable module support** by adding the following to your `package.json`:
+   ```json
+   {
+     "type": "module"
+   }
+   ```
 
+2. **Run the load test**:
+   ```bash
+   node load_test.js
+   ```
 
-
-## 🆘 Troubleshooting
-
-### Common Issues
+## 🔍🧠 Common Issues 🔍🧠
 
 - **Contract deployment fails**: Ensure Ganache is running and the network configuration is correct
 - **Frontend won't start**: Check that all dependencies are installed and no conflicting `"type": "module"` entry exists in package.json
