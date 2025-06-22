@@ -110,3 +110,14 @@ To run load tests:
 ![Markdown](https://img.shields.io/badge/Markdown-67%20lines-blue?style=flat&logo=markdown)
 
 
+| Folder/File          | Lines of Code | Distribution |
+|----------------------|---------------|--------------|
+| `contracts/`         | 267           | ▓▓░░░░░░░░░░░ (0.3%) |
+| `test/`              | 335           | ▓▓░░░░░░░░░░░ (0.4%) |
+| `migrations/`        | 14            | ░░░░░░░░░░░░░ (0.01%) |
+| `frontend/`          | 76,568        | ████████████ (98.9%) |
+| **Total**            | **77,386**    |              |
+
+
+
+
