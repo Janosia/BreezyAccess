@@ -1,5 +1,5 @@
 build/** linguist-vendored
 package-lock.json linguist-generated
 package.json linguist-generated
-truffle-config.js
+truffle-config.js linguist-generated
 *.json linguist-vendored

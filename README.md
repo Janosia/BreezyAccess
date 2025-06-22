@@ -96,4 +96,17 @@ To run load tests:
 - **Frontend won't start**: Check that all dependencies are installed and no conflicting `"type": "module"` entry exists in package.json
 - **Load test issues**: Verify `"type": "module"` is added to package.json before running load tests
 
+## Language Stats
+| Component/Folder          | Lines of Code |
+| ------------------------- | ------------- |
+| `contracts/` (Solidity)   | 267           |
+| `test/` (JS tests)        | 335           |
+| `migrations/` (JS deploy) | 14            |
+| `frontend/` (React app)   | 76,568        |
+| **Total**                 | \~77,386      |
+
+![Solidity](https://img.shields.io/badge/Solidity-267%20lines-blueviolet?style=flat&logo=ethereum)
+![JavaScript](https://img.shields.io/badge/JavaScript-76500%2B%20lines-yellow?style=flat&logo=javascript)
+![Markdown](https://img.shields.io/badge/Markdown-67%20lines-blue?style=flat&logo=markdown)
+
 
