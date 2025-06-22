@@ -1,6 +1,6 @@
-# 🔮 BreezyAccess 🔮
+# 🌬 BreezyAccess 🌬
 
-## ✨ Prerequisites ✨
+## Prerequisites
 
 To run the project, requirements are:
 
@@ -9,7 +9,7 @@ To run the project, requirements are:
 - [Truffle](https://trufflesuite.com/) framework
 - [Ganache](https://trufflesuite.com/ganache/) for local blockchain development
 
-## 🛠️ Installation 🛠️
+## Installation 
 
 1. **Clone the repository**
    ```bash
@@ -22,7 +22,7 @@ To run the project, requirements are:
    npm install
    ```
 
-##  🎉🌌 Set-UP 🎉🌌
+## Set-UP 
 
 ### 1. Deploy Smart Contracts
 
@@ -45,7 +45,7 @@ npm start
 
 3. **Important:** Remove line `"type": "module"` from `package.json` after load testing to ensure dApp runs properly.
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── contracts/          # Smart contracts
@@ -58,7 +58,7 @@ npm start
 
 ##  Configuration
 
-### 🍫 Truffle Configuration 🍫
+###  Truffle(🍫) Configuration 
 
 Truffle is used for smart contract development. Configuration can be found in `truffle-config.js`.
 
@@ -67,7 +67,7 @@ Truffle is used for smart contract development. Configuration can be found in `t
 - **Development Network**: Local Ganache instance
 - **Port**: Default Ganache port (7545 or 8545)
 
-## 📊 Testing 📊
+## Testing 
 
 Run the smart contract tests:
 
@@ -90,7 +90,7 @@ To run load tests:
    node load_test.js
    ```
 
-## 🔍🧠 Common Issues 🔍🧠
+## Common Issues 
 
 - **Contract deployment fails**: Ensure Ganache is running and the network configuration is correct
 - **Frontend won't start**: Check that all dependencies are installed and no conflicting `"type": "module"` entry exists in package.json
